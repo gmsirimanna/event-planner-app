@@ -1,5 +1,5 @@
 import 'package:event_planner/provider/auth_provider.dart';
-import 'package:event_planner/utils/utils.dart';
+import 'package:event_planner/utils/alerts.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
@@ -90,7 +90,7 @@ class RestorePasswordScreen extends StatelessWidget {
               CustomButton(
                 buttonText: authProvider.canResend ? 'Send Reset Link' : 'Resend after 30s',
                 icon: Icons.email,
-                isLoading: authProvider.isLoading ? true : false,
+                isLoading: authProvider.isLoading,
                 onPressed: authProvider.canResend ? () => sendPasswordReset(context, authProvider) : () {},
               ),
 

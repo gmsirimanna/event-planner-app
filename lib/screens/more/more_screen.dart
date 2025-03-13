@@ -1,16 +1,38 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_planner/helper/route_helper.dart';
 import 'package:event_planner/main.dart';
+import 'package:event_planner/provider/auth_provider.dart';
 import 'package:event_planner/screens/login/login_screen.dart';
 import 'package:event_planner/screens/more/edit_profile_screen.dart';
 import 'package:event_planner/utils/color_resources.dart';
 import 'package:event_planner/utils/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../resuable_widgets/custom_text_field.dart';
 import '../../resuable_widgets/custom_button.dart';
 
-class MoreScreen extends StatelessWidget {
+class MoreScreen extends StatefulWidget {
   const MoreScreen({Key? key}) : super(key: key);
+
+  @override
+  State<MoreScreen> createState() => _MoreScreenState();
+}
+
+class _MoreScreenState extends State<MoreScreen> {
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
+      authProvider.listenToUserData();
+    });
+  }
 
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
@@ -40,16 +62,20 @@ class MoreScreen extends StatelessWidget {
       currentAccountPicture: CircleAvatar(
         backgroundColor: Colors.grey[200], // Placeholder background
         child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl:
-                "https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D", // Replace with the actual URL
-            width: 80,
-            height: 80,
-            fit: BoxFit.cover,
-            placeholder: (context, url) => const CircularProgressIndicator(), // Loading indicator
-            errorWidget: (context, url, error) =>
-                const Icon(Icons.person, size: 50, color: Colors.grey), // Fallback icon
-          ),
+          child: Consumer<AuthenticationProvider>(builder: (context, authProvider, child) {
+            return Image.network(
+              authProvider.userModel?.profileImageUrl ?? "", // Fetch directly from Firestore
+              width: 80,
+              height: 80,
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child; // Show image once loaded
+                return const CircularProgressIndicator(); // Show loader while fetching
+              },
+              errorBuilder: (context, error, stackTrace) =>
+                  const Icon(Icons.person, size: 50, color: Colors.grey), // Fallback icon
+            );
+          }),
         ),
       ),
     );
@@ -105,80 +131,97 @@ class MoreScreen extends StatelessWidget {
             // Profile Image
             Expanded(
               child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    SizedBox(height: 20),
-                    SizedBox(
-                      width: 120,
-                      height: 120,
-                      child: CircleAvatar(
-                        backgroundColor: Colors.grey[200], // Placeholder background
-                        child: ClipOval(
-                          child: CachedNetworkImage(
-                            imageUrl:
-                                "https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D", // Replace with the actual URL
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) =>
-                                const CircularProgressIndicator(), // Loading indicator
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.person, size: 50, color: Colors.grey), // Fallback icon
+                child: Consumer<AuthenticationProvider>(builder: (context, authProvider, child) {
+                  updateControllers(authProvider);
+                  return Column(
+                    children: [
+                      SizedBox(height: 20),
+                      Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [
+                          BoxShadow(
+                            spreadRadius: 0.1,
+                            color: Colors.black12,
+                            blurRadius: 1,
+                          ),
+                        ]),
+                        child: CircleAvatar(
+                          backgroundColor: Colors.grey[200], // Placeholder background
+                          child: ClipOval(
+                            child: AspectRatio(
+                              aspectRatio: 1,
+                              child: CachedNetworkImage(
+                                imageUrl: authProvider.userModel?.profileImageUrl ?? "",
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) =>
+                                    const CircularProgressIndicator(), // Loading indicator
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.person, size: 50, color: Colors.grey), // Fallback icon
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 24),
+                      const SizedBox(height: 24),
 
-                    // First Name
-                    const CustomTextField(
-                      labelText: "First Name",
-                      hintText: "Jane",
-                      fillColor: ColorResources.secondaryFillColor,
-                      isShowBorder: true,
-                      isEnabled: false, // Disable input
-                    ),
-                    const SizedBox(height: 16),
+                      // First Name
+                      CustomTextField(
+                        controller: firstNameController,
+                        labelText: "First Name",
+                        hintText: "Jane",
+                        fillColor: ColorResources.secondaryFillColor,
+                        isShowBorder: true,
+                        isEnabled: false, // Disable input
+                      ),
+                      const SizedBox(height: 16),
 
-                    // Last Name
-                    const CustomTextField(
-                      labelText: "Last Name",
-                      hintText: "Cooper",
-                      fillColor: ColorResources.secondaryFillColor,
-                      isShowBorder: true,
-                      isEnabled: false,
-                    ),
-                    const SizedBox(height: 16),
+                      // Last Name
+                      CustomTextField(
+                        controller: lastNameController,
+                        labelText: "Last Name",
+                        hintText: "Cooper",
+                        fillColor: ColorResources.secondaryFillColor,
+                        isShowBorder: true,
+                        isEnabled: false,
+                      ),
+                      const SizedBox(height: 16),
 
-                    // Email
-                    const CustomTextField(
-                      labelText: "Email",
-                      hintText: "jane.c@gmail.com",
-                      fillColor: ColorResources.secondaryFillColor,
-                      isShowBorder: true,
-                      isEnabled: false,
-                    ),
-                    const SizedBox(height: 16),
+                      // Email
+                      CustomTextField(
+                        controller: emailController,
+                        labelText: "Email",
+                        hintText: "jane.c@gmail.com",
+                        fillColor: ColorResources.secondaryFillColor,
+                        isShowBorder: true,
+                        isEnabled: false,
+                      ),
+                      const SizedBox(height: 16),
 
-                    // Phone Number
-                    const CustomTextField(
-                      labelText: "Phone number",
-                      hintText: "02 9371 9090",
-                      fillColor: ColorResources.secondaryFillColor,
-                      isShowBorder: true,
-                      isEnabled: false,
-                    ),
-                    const SizedBox(height: 16),
+                      // Phone Number
+                      CustomTextField(
+                        controller: phoneController,
+                        labelText: "Phone number",
+                        hintText: "02 9371 9090",
+                        fillColor: ColorResources.secondaryFillColor,
+                        isShowBorder: true,
+                        isEnabled: false,
+                      ),
+                      const SizedBox(height: 16),
 
-                    // Mailing Address
-                    const CustomTextField(
-                      labelText: "Mailing address",
-                      hintText: "56 O’Mally Road, ST LEONARDS, 2065, NSW",
-                      fillColor: ColorResources.secondaryFillColor,
-                      isShowBorder: true,
-                      isEnabled: false,
-                    ),
-                    const SizedBox(height: 24),
-                  ],
-                ),
+                      // Mailing Address
+                      CustomTextField(
+                        controller: addressController,
+                        labelText: "Mailing address",
+                        hintText: "56 O’Mally Road, ST LEONARDS, 2065, NSW",
+                        fillColor: ColorResources.secondaryFillColor,
+                        isShowBorder: true,
+                        isEnabled: false,
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                  );
+                }),
               ),
             ),
             // Edit Button
@@ -194,5 +237,15 @@ class MoreScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void updateControllers(AuthenticationProvider authProvider) {
+    if (authProvider.userModel != null) {
+      firstNameController.text = authProvider.userModel!.firstName;
+      lastNameController.text = authProvider.userModel!.lastName;
+      emailController.text = authProvider.userModel!.email;
+      phoneController.text = authProvider.userModel!.phoneNumber;
+      addressController.text = authProvider.userModel!.mailingAddress;
+    }
   }
 }

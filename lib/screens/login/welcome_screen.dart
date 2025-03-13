@@ -1,9 +1,11 @@
+import 'package:event_planner/provider/auth_provider.dart';
 import 'package:event_planner/screens/login/personal_info_screen.dart';
+import 'package:event_planner/utils/alerts.dart';
 import 'package:event_planner/utils/color_resources.dart';
+import 'package:event_planner/utils/styles.dart';
 import 'package:flutter/material.dart';
-
-import 'package:flutter/material.dart';
-
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import '../../helper/route_helper.dart';
 import '../../resuable_widgets/custom_button.dart';
 
@@ -41,26 +43,46 @@ class WelcomeScreen extends StatelessWidget {
 
             const SizedBox(height: 40),
 
-            // Profile Upload Button
-            GestureDetector(
-              onTap: () {
-                // TODO: Implement image picker logic
-              },
-              child: Container(
-                width: 100,
-                height: 100,
-                decoration: const BoxDecoration(
-                  color: ColorResources.secondaryFillColor, // Light pinkish background
-                  shape: BoxShape.circle,
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.photo_camera_outlined,
-                    color: ColorResources.primaryColor, // Camera icon color
-                    size: 25,
+            // Profile Image Upload Section
+            Consumer<AuthenticationProvider>(
+              builder: (context, authProvider, _) {
+                return GestureDetector(
+                  onTap: () {
+                    showImagePicker(context, authProvider);
+                  },
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: ColorResources.secondaryFillColor,
+                          shape: BoxShape.circle,
+                          image: authProvider.selectedImage != null
+                              ? DecorationImage(
+                                  image: FileImage(authProvider.selectedImage!),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
+                        ),
+                      ),
+                      ClipRRect(
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black12),
+                          child: const Icon(
+                            Icons.photo_camera_outlined,
+                            color: ColorResources.primaryColor,
+                            size: 30,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ),
+                );
+              },
             ),
 
             const SizedBox(height: 60),
@@ -84,4 +106,6 @@ class WelcomeScreen extends StatelessWidget {
       ),
     );
   }
+
+  
 }

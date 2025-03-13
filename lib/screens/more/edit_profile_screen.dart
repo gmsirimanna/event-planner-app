@@ -1,22 +1,93 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:event_planner/provider/auth_provider.dart';
 import 'package:event_planner/utils/color_resources.dart';
 import 'package:event_planner/utils/styles.dart';
+import 'package:event_planner/utils/alerts.dart';
+import 'package:event_planner/utils/validator.dart';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
 import '../../resuable_widgets/custom_button.dart';
 import '../../resuable_widgets/custom_text_field.dart';
 
-class EditProfileScreen extends StatelessWidget {
-  EditProfileScreen({Key? key}) : super(key: key);
+class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({Key? key}) : super(key: key);
 
-  final TextEditingController firstNameController = TextEditingController(text: "Jane");
-  final TextEditingController lastNameController = TextEditingController(text: "Cooper");
-  final TextEditingController emailController = TextEditingController(text: "jane.c@gmail.com");
-  final TextEditingController phoneController = TextEditingController(text: "02 9371 9090");
-  final TextEditingController addressController =
-      TextEditingController(text: "56 O’Mally Road, ST LEONARDS, 2065, NSW");
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  late TextEditingController firstNameController;
+  late TextEditingController lastNameController;
+  late TextEditingController phoneController;
+  late TextEditingController addressController;
+  late String imageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    final authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
+
+    // Initialize controllers with current user data
+    firstNameController = TextEditingController(text: authProvider.userModel?.firstName ?? "");
+    lastNameController = TextEditingController(text: authProvider.userModel?.lastName ?? "");
+    phoneController = TextEditingController(text: authProvider.userModel?.phoneNumber ?? "");
+    addressController = TextEditingController(text: authProvider.userModel?.mailingAddress ?? "");
+    imageUrl = authProvider.userModel?.profileImageUrl ?? "";
+  }
+
+  /// Submit updated user data to Firestore
+  Future<void> _saveProfile(AuthenticationProvider authProvider) async {
+    // Validate fields manually
+    String? firstNameError = Validators.validateName(firstNameController.text);
+    if (firstNameError != null) {
+      customSnackBar(context, "Invalid First Name", Colors.red);
+      return;
+    }
+
+    String? lastNameError = Validators.validateName(lastNameController.text);
+    if (lastNameError != null) {
+      customSnackBar(context, "Invalid Last Name", Colors.red);
+      return;
+    }
+
+    String? phoneError = Validators.validatePhoneNumber(phoneController.text);
+    if (phoneError != null) {
+      customSnackBar(context, "Invalid Phone Number", Colors.red);
+      return;
+    }
+
+    String? addressError = Validators.validateAddress(addressController.text);
+    if (addressError != null) {
+      customSnackBar(context, "Invalid Address", Colors.red);
+      return;
+    }
+
+    // Upload Image if selected
+    String? imageUrlNew;
+    if (authProvider.selectedImage != null) {
+      imageUrlNew = await authProvider.uploadProfileImage();
+    } else {
+      imageUrlNew = imageUrl;
+    }
+
+    await authProvider.createUpdateUserData(
+      firstName: firstNameController.text,
+      lastName: lastNameController.text,
+      email: authProvider.userModel?.email ?? "",
+      phoneNumber: phoneController.text,
+      mailingAddress: addressController.text,
+      profileImageUrl: imageUrlNew!,
+    );
+
+    if (!mounted) return;
+    Navigator.pop(context); // Go back after saving
+  }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthenticationProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Edit Profile", style: poppinsMedium.copyWith(color: Colors.black)),
@@ -31,11 +102,8 @@ class EditProfileScreen extends StatelessWidget {
           },
         ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1), // Small line height
-          child: Container(
-            color: Colors.grey.shade300, // Light grey divider
-            height: 1, // Line thickness
-          ),
+          preferredSize: const Size.fromHeight(1),
+          child: Container(color: Colors.grey.shade300, height: 1),
         ),
       ),
       body: SingleChildScrollView(
@@ -43,42 +111,58 @@ class EditProfileScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Profile Image with Edit Option
-
-            Stack(
-              children: [
-                ClipOval(
-                  child: CachedNetworkImage(
-                    imageUrl:
-                        "https://randomuser.me/api/portraits/women/44.jpg", // Replace with user's image URL
-                    width: 120,
-                    height: 120,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => const CircularProgressIndicator(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.person, size: 100, color: Colors.grey),
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  top: 0,
-                  left: 0,
-                  child: GestureDetector(
-                    onTap: () {
-                      // Implement image picker
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: const BoxDecoration(
-                        color: Colors.black12,
-                        shape: BoxShape.circle,
+            Consumer<AuthenticationProvider>(
+              builder: (context, authProvider, _) {
+                return GestureDetector(
+                  onTap: () {
+                    showImagePicker(context, authProvider);
+                  },
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      authProvider.selectedImage != null
+                          ? Container(
+                              width: 120,
+                              height: 120,
+                              decoration: BoxDecoration(
+                                color: ColorResources.secondaryFillColor,
+                                shape: BoxShape.circle,
+                                image: authProvider.selectedImage != null
+                                    ? DecorationImage(
+                                        image: FileImage(authProvider.selectedImage!),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : null,
+                              ),
+                            )
+                          : ClipOval(
+                              child: CachedNetworkImage(
+                                imageUrl: authProvider.userModel?.profileImageUrl ??
+                                    "", // Replace with user's image URL
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => const CircularProgressIndicator(),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.person, size: 100, color: Colors.grey),
+                              ),
+                            ),
+                      ClipRRect(
+                        child: Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black12),
+                          child: const Icon(
+                            Icons.photo_camera_outlined,
+                            color: ColorResources.primaryColor,
+                            size: 30,
+                          ),
+                        ),
                       ),
-                      child: const Icon(Icons.camera_alt, color: Colors.white, size: 18),
-                    ),
+                    ],
                   ),
-                ),
-              ],
+                );
+              },
             ),
 
             const SizedBox(height: 20),
@@ -88,45 +172,53 @@ class EditProfileScreen extends StatelessWidget {
               controller: firstNameController,
               labelText: "First Name",
               hintText: "Enter first name",
-              fillColor: const Color(0xFFFFF5F3),
+              fillColor: ColorResources.secondaryFillColor,
             ),
             const SizedBox(height: 16),
+
             CustomTextField(
               controller: lastNameController,
               labelText: "Last Name",
               hintText: "Enter last name",
-              fillColor: const Color(0xFFFFF5F3),
+              fillColor: ColorResources.secondaryFillColor,
             ),
             const SizedBox(height: 16),
+
+            // Email Field (Disabled)
             CustomTextField(
-              controller: emailController,
+              controller: TextEditingController(text: authProvider.userModel?.email ?? ""),
               labelText: "Email",
               hintText: "Enter email",
-              fillColor: const Color(0xFFFFF5F3),
+              fillColor: Colors.grey.shade300,
+              isEnabled: false, // Make email read-only
             ),
             const SizedBox(height: 16),
+
             CustomTextField(
               controller: phoneController,
               labelText: "Phone number",
               hintText: "Enter phone number",
-              fillColor: const Color(0xFFFFF5F3),
+              fillColor: ColorResources.secondaryFillColor,
             ),
             const SizedBox(height: 16),
+
             CustomTextField(
               controller: addressController,
               labelText: "Mailing address",
               hintText: "Enter address",
-              fillColor: const Color(0xFFFFF5F3),
+              fillColor: ColorResources.secondaryFillColor,
             ),
             const SizedBox(height: 30),
 
             // Save Button
-            CustomButton(
-              buttonText: "Save",
-              backgroundColor: ColorResources.primaryColor,
-              onPressed: () {
-                // Implement Save logic
-              },
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: CustomButton(
+                buttonText: "Save",
+                isLoading: authProvider.isLoading,
+                backgroundColor: ColorResources.primaryColor,
+                onPressed: () => _saveProfile(authProvider),
+              ),
             ),
           ],
         ),

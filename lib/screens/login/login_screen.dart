@@ -3,7 +3,7 @@ import 'package:event_planner/main.dart';
 import 'package:event_planner/screens/navigation/nav_bar_screen.dart';
 import 'package:event_planner/utils/color_resources.dart';
 import 'package:event_planner/utils/styles.dart';
-import 'package:event_planner/utils/utils.dart';
+import 'package:event_planner/utils/alerts.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../helper/route_helper.dart';
@@ -23,8 +23,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController(text: "test.vegasoftware@gmail.com");
+  final TextEditingController passwordController = TextEditingController(text: "Gayan@14");
 
   void handleLogin(AuthenticationProvider authProvider, String username, String password) {
     // Validate username (email in this case)
@@ -56,6 +56,8 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.of(MyApp.navigatorKey.currentContext!)
               .pushNamedAndRemoveUntil(RouteHelper.navBar, (route) => false, arguments: NavBarScreen());
         }
+        // Navigator.of(MyApp.navigatorKey.currentContext!)
+        //     .pushNamedAndRemoveUntil(RouteHelper.welcome, (route) => false, arguments: WelcomeScreen());
       } else {
         customSnackBar(context, "USER NOT FOUND", Colors.red);
       }

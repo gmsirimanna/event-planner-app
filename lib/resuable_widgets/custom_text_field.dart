@@ -1,3 +1,4 @@
+import 'package:event_planner/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -20,7 +21,7 @@ class CustomTextField extends StatefulWidget {
   final bool isEnabled;
   final TextCapitalization capitalization;
   final double radius;
-  final String? Function(String?)? validator; // ✅ Validation function
+  final String? Function(String?)? validator; 
 
   const CustomTextField({
     Key? key,
@@ -77,6 +78,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           maxLines: widget.maxLines,
           textInputAction: widget.inputAction,
           keyboardType: widget.inputType,
+
           cursorColor: Theme.of(context).primaryColor,
           textCapitalization: widget.capitalization,
           enabled: widget.isEnabled,
@@ -92,6 +94,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           },
           decoration: InputDecoration(
             hintText: widget.hintText,
+            hintStyle: TextStyle(color: Colors.grey.shade400),
             contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
             filled: true,
             fillColor: widget.fillColor ?? const Color(0xFFFFF5F3),

@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:event_planner/provider/auth_provider.dart';
+import 'package:event_planner/provider/nav_bar_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,8 +28,9 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (ctx) => AuthProvider(di.sl())),
+        ChangeNotifierProvider(create: (ctx) => AuthenticationProvider(di.sl())),
         ChangeNotifierProvider(create: (ctx) => LocalizationProvider(sharedPreferences: di.sl())),
+        ChangeNotifierProvider(create: (ctx) => NavBarProvider()),
       ],
       child: EasyLocalization(
         supportedLocales: const [Locale('en', 'US'), Locale('si', 'LK')],

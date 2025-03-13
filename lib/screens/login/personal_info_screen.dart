@@ -47,7 +47,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                         "Personal info",
                         style: poppinsBold.copyWith(
                           fontSize: 24,
-                          fontFamily: 'Poppins',
                         ),
                       ),
 
@@ -60,7 +59,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
                           color: Colors.black54,
-                          fontFamily: 'Poppins',
                         ),
                       ),
 

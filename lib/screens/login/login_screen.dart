@@ -1,33 +1,81 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:event_planner/screens/login/restore_pass_screen.dart';
-import 'package:event_planner/screens/login/signup_screen.dart';
-import 'package:event_planner/screens/login/welcome_screen.dart';
+import 'package:event_planner/main.dart';
+import 'package:event_planner/screens/navigation/nav_bar_screen.dart';
 import 'package:event_planner/utils/color_resources.dart';
 import 'package:event_planner/utils/styles.dart';
+import 'package:event_planner/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
 import '../../helper/route_helper.dart';
+import '../../provider/auth_provider.dart';
 import '../../resuable_widgets/custom_button.dart';
 import '../../resuable_widgets/custom_text_field.dart';
 import '../../utils/validator.dart';
+import 'restore_pass_screen.dart';
+import 'signup_screen.dart';
+import 'welcome_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  void handleLogin(AuthenticationProvider authProvider, String username, String password) {
+    // Validate username (email in this case)
+    String? usernameError = Validators.validateEmail(username);
+    if (usernameError != null) {
+      customSnackBar(context, "msg", Colors.red);
+      return; // Stop login process
+    }
+
+    // Validate password
+    String? passwordError = Validators.validatePassword(passwordController.text.trim());
+    if (passwordError != null) {
+      customSnackBar(context, "msg", Colors.red);
+      return; // Stop login process
+    }
+
+    // Proceed with login if validations pass
+    authProvider
+        .signIn(
+      username.trim(),
+      password.trim(),
+    )
+        .then((_) {
+      if (authProvider.user != null) {
+        if (authProvider.user!.metadata.creationTime == authProvider.user!.metadata.lastSignInTime) {
+          Navigator.of(MyApp.navigatorKey.currentContext!)
+              .pushNamedAndRemoveUntil(RouteHelper.welcome, (route) => false, arguments: WelcomeScreen());
+        } else {
+          Navigator.of(MyApp.navigatorKey.currentContext!)
+              .pushNamedAndRemoveUntil(RouteHelper.navBar, (route) => false, arguments: NavBarScreen());
+        }
+      } else {
+        customSnackBar(context, "USER NOT FOUND", Colors.red);
+      }
+    }).catchError((error) {
+      // Handle Firebase authentication errors
+      customSnackBar(context, "ERROR", Colors.red);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
+    final authProvider = Provider.of<AuthenticationProvider>(context);
 
     return Scaffold(
-      // SafeArea helps avoid overlapping with the status bar
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Language Selector Row
               Align(
                 alignment: Alignment.centerRight,
                 child: PopupMenuButton<Locale>(
@@ -35,19 +83,13 @@ class LoginScreen extends StatelessWidget {
                     context.setLocale(locale);
                   },
                   itemBuilder: (BuildContext context) => <PopupMenuEntry<Locale>>[
-                    const PopupMenuItem<Locale>(
-                      value: Locale('en', 'US'),
-                      child: Text('English'),
-                    ),
-                    const PopupMenuItem<Locale>(
-                      value: Locale('si', 'LK'),
-                      child: Text('සිංහල'),
-                    ),
+                    const PopupMenuItem<Locale>(value: Locale('en', 'US'), child: Text('English')),
+                    const PopupMenuItem<Locale>(value: Locale('si', 'LK'), child: Text('සිංහල')),
                   ],
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      color: ColorResources.secondaryFillColor,
+                      color: Colors.grey[200],
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(20),
                         bottomLeft: Radius.circular(20),
@@ -56,111 +98,91 @@ class LoginScreen extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.public, color: Colors.black), // World icon
+                        const Icon(Icons.public, color: Colors.black),
                         const SizedBox(width: 6),
                         Text(
-                          context.locale.languageCode == "en" ? "En" : "සිං", // Show EN or SI dynamically
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: 'Poppins',
-                          ),
+                          context.locale.languageCode == "en" ? "En" : "සිං",
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
-              // Top spacing
               const SizedBox(height: 40),
-
-              // Welcome title
-              Text(
-                'welcome'.tr(),
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
-              ),
+              Text('welcome'.tr(),
+                  style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
+                  textAlign: TextAlign.center),
               const SizedBox(height: 8),
-              Text(
-                tr("welcome_portal"),
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.center,
-              ),
-
+              Text(tr("welcome_portal"),
+                  style: const TextStyle(fontSize: 16, color: Colors.black), textAlign: TextAlign.center),
               const SizedBox(height: 40),
-
-              // Email TextField
               CustomTextField(
-                  labelText: tr("email"),
-                  hintText: tr("email_hint"),
-                  isShowPrefixIcon: true,
-                  prefixIconUrl: const Icon(Icons.email_outlined),
-                  fillColor: const Color(0xFFFFF5F3),
-                  validator: Validators.validateEmail),
-
-              const SizedBox(height: 16),
-
-              // Password TextField
-              CustomTextField(
-                  labelText: tr("password"),
-                  hintText: tr("password_hint"),
-                  isPassword: true,
-                  isShowPrefixIcon: true,
-                  prefixIconUrl: const Icon(Icons.lock_outline),
-                  isShowSuffixIcon: true,
-                  suffixIconUrl: Icons.send, // This is used when isIcon is true.
-                  fillColor: const Color(0xFFFFEFE9), // Light pinkish background
-                  validator: Validators.validatePassword),
-
-              const SizedBox(height: 16),
-
-              // Restore password
-              Align(
-                  alignment: Alignment.centerRight,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.of(context)
-                          .pushNamed(RouteHelper.restorePass, arguments: RestorePasswordScreen());
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          tr('restore_password'),
-                          style: poppinsMedium.copyWith(
-                            color: ColorResources.primaryColor, // Adjust to your color
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Icon(
-                          Icons.north_east, // or Icons.arrow_outward, etc.
-                          color: ColorResources.primaryColor,
-                        ),
-                      ],
-                    ),
-                  )),
-
-              SizedBox(height: MediaQuery.of(context).size.width * 0.4),
-
-              // Login button
-              CustomButton(
-                buttonText: 'login'.tr(),
-                icon: Icons.arrow_forward,
-                onPressed: () {
-                  Navigator.of(context).pushNamed(RouteHelper.welcome, arguments: WelcomeScreen());
-                },
+                controller: emailController,
+                labelText: tr("email"),
+                hintText: tr("email_hint"),
+                isShowPrefixIcon: true,
+                prefixIconUrl: const Icon(Icons.email_outlined),
+                validator: Validators.validateEmail,
               ),
-
               const SizedBox(height: 16),
-
-              // Sign Up button
+              CustomTextField(
+                controller: passwordController,
+                labelText: tr("password"),
+                hintText: tr("password_hint"),
+                isPassword: true,
+                isShowPrefixIcon: true,
+                prefixIconUrl: const Icon(Icons.lock_outline),
+                validator: Validators.validatePassword,
+              ),
+              const SizedBox(height: 24),
+              Align(
+                alignment: Alignment.centerRight,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context)
+                        .pushNamed(RouteHelper.restorePass, arguments: RestorePasswordScreen());
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        tr('restore_password'),
+                        style: poppinsMedium.copyWith(
+                          color: ColorResources.primaryColor, // Adjust to your color
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.north_east, // or Icons.arrow_outward, etc.
+                        color: ColorResources.primaryColor,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: MediaQuery.of(context).size.width * 0.3),
+              if (authProvider.errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Text(
+                    authProvider.errorMessage!,
+                    style: const TextStyle(color: Colors.red, fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              const SizedBox(height: 16),
+              authProvider.isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : CustomButton(
+                      buttonText: 'login'.tr(),
+                      icon: Icons.arrow_forward,
+                      backgroundColor: authProvider.isLoading ? Colors.grey : ColorResources.primaryColor,
+                      onPressed: () =>
+                          handleLogin(authProvider, emailController.text, passwordController.text),
+                    ),
+              const SizedBox(height: 16),
               CustomButton(
                 buttonText: 'sign_up'.tr(),
                 icon: Icons.arrow_forward,

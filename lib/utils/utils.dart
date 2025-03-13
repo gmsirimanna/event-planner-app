@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:event_planner/utils/dimensions.dart';
 
 customSnackBar(BuildContext context, String msg, Color color) =>
@@ -7,7 +6,7 @@ customSnackBar(BuildContext context, String msg, Color color) =>
       duration: const Duration(seconds: 2),
       content: Text(
         msg,
-        style: GoogleFonts.roboto(
+        style: TextStyle(
           fontSize: Dimensions.fontSizeSmall,
           color: Colors.white,
         ),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:event_planner/screens/navigation/nav_bar_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:event_planner/helper/route_helper.dart';
@@ -35,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void _route() {
     Navigator.of(context)
-        .pushNamedAndRemoveUntil(RouteHelper.login, (route) => false, arguments: LoginScreen());
+        .pushNamedAndRemoveUntil(RouteHelper.navBar, (route) => false, arguments: NavBarScreen());
   }
 
   @override

@@ -7,9 +7,10 @@ class CustomButton extends StatelessWidget {
   final Color? backgroundColor;
   final Color? textColor;
   final Color? iconColor;
-  final bool iconBeforeText; // New flag to control icon position
+  final bool iconBeforeText;
   final double radius;
   final double height;
+  final bool isLoading; // New loading state
 
   const CustomButton({
     Key? key,
@@ -19,47 +20,62 @@ class CustomButton extends StatelessWidget {
     this.backgroundColor,
     this.textColor,
     this.iconColor,
-    this.iconBeforeText = false, // Default: Icon appears after text
+    this.iconBeforeText = false,
     this.radius = 4.0,
     this.height = 50.0,
+    this.isLoading = false, // Default: not loading
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      decoration: BoxDecoration(
-        color: backgroundColor ?? const Color(0xFFCF5D42), // Default reddish color
-        borderRadius: BorderRadius.circular(radius),
-      ),
-      child: TextButton(
-        onPressed: onPressed,
-        style: TextButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(radius),
-          ),
+    return GestureDetector(
+      onTap: isLoading ? null : onPressed, // Disable clicks when loading
+      child: Container(
+        height: height,
+        decoration: BoxDecoration(
+          color: isLoading
+              ? Colors.grey[400] // Grey when loading
+              : backgroundColor ?? const Color(0xFFCF5D42), // Default color
+          borderRadius: BorderRadius.circular(radius),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (icon != null && iconBeforeText) ...[
-              Icon(icon, color: iconColor ?? Colors.white),
-              const SizedBox(width: 8),
-            ],
-            Text(
-              buttonText,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                fontFamily: 'Poppins',
-                color: textColor ?? Colors.white,
-              ),
+        child: TextButton(
+          onPressed: isLoading ? null : onPressed,
+          style: TextButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(radius),
             ),
-            if (icon != null && !iconBeforeText) ...[
-              const SizedBox(width: 8),
-              Icon(icon, color: iconColor ?? Colors.white),
-            ],
-          ],
+          ),
+          child: isLoading
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    strokeWidth: 2.5,
+                  ),
+                ) // Show loading indicator
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (icon != null && iconBeforeText) ...[
+                      Icon(icon, color: iconColor ?? Colors.white),
+                      const SizedBox(width: 8),
+                    ],
+                    Text(
+                      buttonText,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                        color: textColor ?? Colors.white,
+                      ),
+                    ),
+                    if (icon != null && !iconBeforeText) ...[
+                      const SizedBox(width: 8),
+                      Icon(icon, color: iconColor ?? Colors.white),
+                    ],
+                  ],
+                ),
         ),
       ),
     );

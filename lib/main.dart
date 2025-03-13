@@ -1,12 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:event_planner/provider/auth_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:event_planner/helper/route_helper.dart';
 import 'package:event_planner/provider/localization_provider.dart';
-import 'package:event_planner/provider/splash_provider.dart';
-
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'package:sizer/sizer.dart';
 import 'package:event_planner/data/base/di_container.dart' as di;
 
@@ -14,9 +15,9 @@ Future<void> main() async {
   RouteHelper.setupRouter();
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
-
-  final sharedPreferences = await SharedPreferences.getInstance();
-  //register dio client and other providers
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await di.init();
 
   await SystemChrome.setPreferredOrientations(
@@ -26,8 +27,8 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (ctx) => SplashProvider()),
-        ChangeNotifierProvider(create: (ctx) => LocalizationProvider(sharedPreferences: sharedPreferences)),
+        ChangeNotifierProvider(create: (ctx) => AuthProvider(di.sl())),
+        ChangeNotifierProvider(create: (ctx) => LocalizationProvider(sharedPreferences: di.sl())),
       ],
       child: EasyLocalization(
         supportedLocales: const [Locale('en', 'US'), Locale('si', 'LK')],

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "350782808185",
+    "project_id": "event-planner-143b0",
+    "storage_bucket": "event-planner-143b0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:350782808185:android:2b21f84fea70b4d23df4a8",
+        "android_client_info": {
+          "package_name": "com.gayan.event_planner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBT1LcpEV7vQVeOMYYi0UOWQqozQdVc0EU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

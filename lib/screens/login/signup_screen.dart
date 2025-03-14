@@ -93,7 +93,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   fillColor: const Color(0xFFFFEFE9),
                   validator: (value) => Validators.validateConfirmPassword(value, passwordController.text),
                 ),
-                const SizedBox(height: 40),
+
+                SizedBox(height: MediaQuery.of(context).size.height * 0.2),
 
                 CustomButton(
                   buttonText: tr("sign_up"),

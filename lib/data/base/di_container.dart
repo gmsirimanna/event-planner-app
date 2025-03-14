@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:event_planner/data/repository/auth_repo.dart';
+import 'package:event_planner/data/repository/home_repo.dart';
 import 'package:event_planner/provider/auth_provider.dart';
+import 'package:event_planner/provider/home_provider.dart';
 import 'package:event_planner/provider/nav_bar_provider.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,10 +23,12 @@ Future<void> init() async {
   sl.registerLazySingleton(() => Dio());
   sl.registerLazySingleton(() => LoggingInterceptor());
   sl.registerLazySingleton(() => AuthRepository());
+  sl.registerLazySingleton(() => HomeRepository(dioClient: sl()));
 
   sl.registerFactory(() => AuthenticationProvider(sl()));
   sl.registerFactory(() => LocalizationProvider(sharedPreferences: sl()));
   sl.registerFactory(() => NavBarProvider());
+  sl.registerFactory(() => HomeProvider(homeRepository: sl()));
 
   //feature - providers
 }

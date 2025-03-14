@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
   final String buttonText;
+  final String buttonLoadingText;
   final VoidCallback onPressed;
   final IconData? icon;
   final Color? backgroundColor;
@@ -17,6 +18,7 @@ class CustomButton extends StatelessWidget {
     required this.buttonText,
     required this.onPressed,
     this.icon,
+    this.buttonLoadingText = "Please wait",
     this.backgroundColor,
     this.textColor,
     this.iconColor,
@@ -46,14 +48,29 @@ class CustomButton extends StatelessWidget {
             ),
           ),
           child: isLoading
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    strokeWidth: 2.5,
-                  ),
-                ) // Show loading indicator
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(
+                      width: 15,
+                      height: 15,
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        strokeWidth: 2.5,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      buttonLoadingText,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                        color: textColor ?? Colors.white,
+                      ),
+                    ),
+                  ],
+                )
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

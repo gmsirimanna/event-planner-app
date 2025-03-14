@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:event_planner/main.dart';
+import 'package:event_planner/provider/nav_bar_provider.dart';
 import 'package:event_planner/screens/navigation/nav_bar_screen.dart';
 import 'package:event_planner/utils/color_resources.dart';
 import 'package:event_planner/utils/styles.dart';
@@ -49,6 +50,8 @@ class _LoginScreenState extends State<LoginScreen> {
     )
         .then((_) {
       if (authProvider.user != null) {
+        final navBarProvider = Provider.of<NavBarProvider>(context, listen: false);
+        navBarProvider.setNavBarIndex(0);
         if (authProvider.user!.metadata.creationTime == authProvider.user!.metadata.lastSignInTime) {
           Navigator.of(MyApp.navigatorKey.currentContext!)
               .pushNamedAndRemoveUntil(RouteHelper.welcome, (route) => false, arguments: WelcomeScreen());
@@ -56,13 +59,10 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.of(MyApp.navigatorKey.currentContext!)
               .pushNamedAndRemoveUntil(RouteHelper.navBar, (route) => false, arguments: NavBarScreen());
         }
-        // Navigator.of(MyApp.navigatorKey.currentContext!)
-        //     .pushNamedAndRemoveUntil(RouteHelper.welcome, (route) => false, arguments: WelcomeScreen());
       } else {
         customSnackBar(context, "USER NOT FOUND", Colors.red);
       }
     }).catchError((error) {
-      // Handle Firebase authentication errors
       customSnackBar(context, "ERROR", Colors.red);
     });
   }
@@ -134,6 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 hintText: tr("password_hint"),
                 isPassword: true,
                 isShowPrefixIcon: true,
+                isShowSuffixIcon: true,
                 prefixIconUrl: const Icon(Icons.lock_outline),
                 validator: Validators.validatePassword,
               ),
@@ -175,15 +176,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               const SizedBox(height: 16),
-              authProvider.isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : CustomButton(
-                      buttonText: 'login'.tr(),
-                      icon: Icons.arrow_forward,
-                      backgroundColor: authProvider.isLoading ? Colors.grey : ColorResources.primaryColor,
-                      onPressed: () =>
-                          handleLogin(authProvider, emailController.text, passwordController.text),
-                    ),
+              CustomButton(
+                buttonText: 'login'.tr(),
+                icon: Icons.arrow_forward,
+                isLoading: authProvider.isLoading,
+                backgroundColor: authProvider.isLoading ? Colors.grey : ColorResources.primaryColor,
+                onPressed: () => handleLogin(authProvider, emailController.text, passwordController.text),
+              ),
               const SizedBox(height: 16),
               CustomButton(
                 buttonText: 'sign_up'.tr(),

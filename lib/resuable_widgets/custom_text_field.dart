@@ -21,7 +21,7 @@ class CustomTextField extends StatefulWidget {
   final bool isEnabled;
   final TextCapitalization capitalization;
   final double radius;
-  final String? Function(String?)? validator; 
+  final String? Function(String?)? validator;
 
   const CustomTextField({
     Key? key,
@@ -78,7 +78,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
           maxLines: widget.maxLines,
           textInputAction: widget.inputAction,
           keyboardType: widget.inputType,
-
           cursorColor: Theme.of(context).primaryColor,
           textCapitalization: widget.capitalization,
           enabled: widget.isEnabled,

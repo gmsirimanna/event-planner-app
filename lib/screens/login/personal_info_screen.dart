@@ -202,6 +202,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                           await _submitProfile(authProvider);
                         },
                         isLoading: authProvider.isLoading,
+                        buttonLoadingText: "Saving..",
                       ),
                     );
                   }),

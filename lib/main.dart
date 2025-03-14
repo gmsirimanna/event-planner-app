@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:event_planner/provider/auth_provider.dart';
+import 'package:event_planner/provider/home_provider.dart';
 import 'package:event_planner/provider/nav_bar_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:event_planner/helper/route_helper.dart';
 import 'package:event_planner/provider/localization_provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:sizer/sizer.dart';
 import 'package:event_planner/data/base/di_container.dart' as di;
@@ -31,6 +31,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (ctx) => AuthenticationProvider(di.sl())),
         ChangeNotifierProvider(create: (ctx) => LocalizationProvider(sharedPreferences: di.sl())),
         ChangeNotifierProvider(create: (ctx) => NavBarProvider()),
+        ChangeNotifierProvider(create: (ctx) => HomeProvider(homeRepository: di.sl())),
       ],
       child: EasyLocalization(
         supportedLocales: const [Locale('en', 'US'), Locale('si', 'LK')],

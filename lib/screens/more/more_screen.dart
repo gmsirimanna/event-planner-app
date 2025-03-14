@@ -49,36 +49,34 @@ class _MoreScreenState extends State<MoreScreen> {
   }
 
   Widget _buildUserHeader() {
-    return UserAccountsDrawerHeader(
-      decoration: const BoxDecoration(color: Colors.white),
-      accountName: const Text(
-        "Jane Cooper",
-        style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
-      ),
-      accountEmail: const Text(
-        "jane.c@gmail.com",
-        style: TextStyle(color: Colors.black54, fontSize: 14),
-      ),
-      currentAccountPicture: CircleAvatar(
-        backgroundColor: Colors.grey[200], // Placeholder background
-        child: ClipOval(
-          child: Consumer<AuthenticationProvider>(builder: (context, authProvider, child) {
-            return Image.network(
-              authProvider.userModel?.profileImageUrl ?? "", // Fetch directly from Firestore
-              width: 80,
-              height: 80,
-              fit: BoxFit.cover,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child; // Show image once loaded
-                return const CircularProgressIndicator(); // Show loader while fetching
-              },
-              errorBuilder: (context, error, stackTrace) =>
-                  const Icon(Icons.person, size: 50, color: Colors.grey), // Fallback icon
-            );
-          }),
+    return Consumer<AuthenticationProvider>(builder: (context, authProvider, child) {
+      return UserAccountsDrawerHeader(
+        decoration: const BoxDecoration(color: Colors.white),
+        accountName: Text(
+          authProvider.userModel?.firstName ?? "",
+          style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
         ),
-      ),
-    );
+        accountEmail: Text(
+          authProvider.userModel?.email ?? "",
+          style: TextStyle(color: Colors.black54, fontSize: 14),
+        ),
+        currentAccountPicture: CircleAvatar(
+          backgroundColor: Colors.grey[200], // Placeholder background
+          child: ClipOval(
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: CachedNetworkImage(
+                imageUrl: authProvider.userModel?.profileImageUrl ?? "",
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const CircularProgressIndicator(), // Loading indicator
+                errorWidget: (context, url, error) =>
+                    const Icon(Icons.person, size: 50, color: Colors.grey), // Fallback icon
+              ),
+            ),
+          ),
+        ),
+      );
+    });
   }
 
   Widget _buildLogoutButton(BuildContext context) {

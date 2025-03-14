@@ -38,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void _route() {
     Navigator.of(context)
         // .pushNamedAndRemoveUntil(RouteHelper.welcome, (route) => false, arguments: WelcomeScreen());
-        .pushNamedAndRemoveUntil(RouteHelper.login, (route) => false, arguments: LoginScreen());
+        .pushNamedAndRemoveUntil(RouteHelper.navBar, (route) => false, arguments: NavBarScreen());
   }
 
   @override

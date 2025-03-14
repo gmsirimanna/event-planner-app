@@ -250,14 +250,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 const SizedBox(height: 40),
 
-                authProvider.isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : CustomButton(
-                        buttonText: tr("sign_up"),
-                        icon: Icons.arrow_forward,
-                        onPressed: () => handleSignUp(authProvider, emailController.text,
-                            passwordController.text, confirmPasswordController.text),
-                      ),
+                CustomButton(
+                  buttonText: tr("sign_up"),
+                  icon: Icons.arrow_forward,
+                  isLoading: authProvider.isLoading,
+                  buttonLoadingText: "Signing up..",
+                  onPressed: () => handleSignUp(authProvider, emailController.text, passwordController.text,
+                      confirmPasswordController.text),
+                ),
                 const SizedBox(height: 16),
 
                 CustomButton(

@@ -1,11 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_planner/helper/route_helper.dart';
-import 'package:event_planner/main.dart';
 import 'package:event_planner/provider/auth_provider.dart';
-import 'package:event_planner/screens/login/login_screen.dart';
 import 'package:event_planner/screens/more/edit_profile_screen.dart';
+import 'package:event_planner/screens/more/widgets/drawer_widget.dart';
 import 'package:event_planner/utils/color_resources.dart';
-import 'package:event_planner/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../resuable_widgets/custom_text_field.dart';
@@ -32,76 +30,6 @@ class _MoreScreenState extends State<MoreScreen> {
       final authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
       authProvider.listenToUserData();
     });
-  }
-
-  Widget _buildDrawer(BuildContext context) {
-    return Drawer(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildUserHeader(),
-          _buildLogoutButton(context),
-          const Spacer(),
-          _buildVersionText(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUserHeader() {
-    return Consumer<AuthenticationProvider>(builder: (context, authProvider, child) {
-      return UserAccountsDrawerHeader(
-        decoration: const BoxDecoration(color: Colors.white),
-        accountName: Text(
-          authProvider.userModel?.firstName ?? "",
-          style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        accountEmail: Text(
-          authProvider.userModel?.email ?? "",
-          style: TextStyle(color: Colors.black54, fontSize: 14),
-        ),
-        currentAccountPicture: CircleAvatar(
-          backgroundColor: Colors.grey[200], // Placeholder background
-          child: ClipOval(
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: CachedNetworkImage(
-                imageUrl: authProvider.userModel?.profileImageUrl ?? "",
-                fit: BoxFit.cover,
-                placeholder: (context, url) => const CircularProgressIndicator(), // Loading indicator
-                errorWidget: (context, url, error) =>
-                    const Icon(Icons.person, size: 50, color: Colors.grey), // Fallback icon
-              ),
-            ),
-          ),
-        ),
-      );
-    });
-  }
-
-  Widget _buildLogoutButton(BuildContext context) {
-    return ListTile(
-      leading: const Icon(Icons.logout, color: Colors.red),
-      title: Text("Logout", style: poppinsMedium.copyWith(color: Colors.red, fontSize: 16)),
-      onTap: () async {
-        Provider.of<AuthenticationProvider>(context, listen: false).signOut();
-
-        Navigator.of(MyApp.navigatorKey.currentContext!)
-            .pushNamedAndRemoveUntil(RouteHelper.login, (route) => false);
-      },
-    );
-  }
-
-  Widget _buildVersionText() {
-    return const Padding(
-      padding: EdgeInsets.only(bottom: 20, left: 16),
-      child: Center(
-        child: Text(
-          "Version 0.0.1",
-          style: TextStyle(color: Colors.grey, fontSize: 14),
-        ),
-      ),
-    );
   }
 
   @override
@@ -246,5 +174,19 @@ class _MoreScreenState extends State<MoreScreen> {
       phoneController.text = authProvider.userModel!.phoneNumber;
       addressController.text = authProvider.userModel!.mailingAddress;
     }
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          UserHeaderWidget(),
+          LogoutWidget(context: context),
+          const Spacer(),
+          VersionWidget(),
+        ],
+      ),
+    );
   }
 }

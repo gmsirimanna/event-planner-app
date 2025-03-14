@@ -1,5 +1,6 @@
 import 'package:event_planner/provider/auth_provider.dart';
 import 'package:event_planner/utils/alerts.dart';
+import 'package:event_planner/utils/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +16,7 @@ class RestorePasswordScreen extends StatelessWidget {
   void sendPasswordReset(BuildContext context, AuthenticationProvider authProvider) {
     String? emailError = Validators.validateEmail(emailController.text.trim());
     if (emailError != null) {
-      customSnackBar(context, emailError, Colors.red);
+      customSnackBar(emailError, Colors.red);
       return;
     }
 
@@ -44,7 +45,7 @@ class RestorePasswordScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                "Enter your email and we will send you a link to reset your password.",
+                AppConstants.resendEmail,
                 style: const TextStyle(fontSize: 16, color: Colors.black54),
                 textAlign: TextAlign.center,
               ),

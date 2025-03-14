@@ -5,13 +5,15 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:event_planner/helper/route_helper.dart';
 import 'package:event_planner/provider/home_provider.dart';
 import 'package:event_planner/provider/post_provider.dart';
+import 'package:event_planner/screens/home/widgets/horizontal_image_widget.dart';
+import 'package:event_planner/screens/home/widgets/organizer_tile_widget.dart';
+import 'package:event_planner/screens/home/widgets/shimmer_widgets.dart';
 import 'package:event_planner/screens/post/post_screen.dart';
 import 'package:event_planner/utils/color_resources.dart';
 import 'package:event_planner/utils/dimensions.dart';
 import 'package:event_planner/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -55,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   // Image Slider with Shimmer Effect
                   if (homeProvider.isLoading)
-                    _buildShimmerSlider()
+                    ShimmerSliderWidget()
                   else if (homeProvider.errorMessage != null)
                     Center(
                       child: Container(
@@ -88,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               imageUrl: imageUrl,
                               fit: BoxFit.cover,
                               width: double.infinity,
-                              placeholder: (context, url) => _buildShimmerImage(),
+                              placeholder: (context, url) => ShimmerImageWidget(),
                               errorWidget: (context, url, error) => const Icon(
                                 Icons.image_not_supported_rounded,
                                 size: 50,
@@ -127,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          "Tech Conference 2025",
+                          "Photography Event 2025",
                           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 4),
@@ -143,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: 10),
                         homeProvider.isLoadingUsers
-                            ? _buildShimmerOrganizers()
+                            ? ShimmerOrganizersWidget()
                             : homeProvider.errorMessage != null
                                 ? Center(
                                     child: Container(
@@ -166,7 +168,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     separatorBuilder: (_, __) => Divider(color: Colors.grey.shade300),
                                     itemBuilder: (context, index) {
                                       final user = homeProvider.users[index];
-                                      return _buildOrganizerTile(user.name, user.email, index);
+                                      return OrganizerTileWidget(
+                                          name: user.name, email: user.email, index: index);
                                     },
                                   ),
                       ],
@@ -218,10 +221,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Container(
                     height: 220,
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                    child: homeProvider.isLoadingImages &&
-                            homeProvider.images.isNotEmpty &&
-                            homeProvider.imageUrls.isNotEmpty
-                        ? _buildShimmerList()
+                    child: homeProvider.isLoadingImages
+                        ? ShimmerListWidget()
                         : homeProvider.errorMessage != null
                             ? Center(
                                 child: Container(
@@ -242,9 +243,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                 padding: EdgeInsets.zero,
                                 shrinkWrap: true,
                                 itemBuilder: (context, index) {
-                                  final imageWithDes = homeProvider.images[index];
-                                  final image = homeProvider.imageUrls[index];
-                                  return _buildImageTile(image, imageWithDes.title, imageWithDes.description);
+                                  try {
+                                    final imageWithDes = homeProvider.images[index];
+                                    final image = homeProvider.imageUrls[index];
+                                    return HorizontalImageTileWidget(
+                                        imageUrl: image,
+                                        title: imageWithDes.title,
+                                        description: imageWithDes.description);
+                                  } catch (e) {
+                                    return SizedBox();
+                                  }
                                 },
                               ),
                   ),
@@ -285,193 +293,6 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-    );
-  }
-
-  Widget _buildImageTile(String imageUrl, String title, String description) {
-    return Container(
-      width: 220,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          left: BorderSide(color: Colors.grey.shade300, width: 0.5), // Left border
-          top: BorderSide(color: Colors.grey.shade300, width: 1), // Top border
-          bottom: BorderSide(color: Colors.grey.shade300, width: 1), // Bottom border
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image
-          ClipRRect(
-            child: CachedNetworkImage(
-              imageUrl: imageUrl,
-              height: 100,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => _buildShimmerImage(),
-              errorWidget: (context, url, error) => const Icon(Icons.broken_image, size: 50),
-            ),
-          ),
-
-          // Title
-          Padding(
-            padding: const EdgeInsets.only(left: 8, top: 8, right: 8),
-            child: Text(
-              title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-            ),
-          ),
-          // Des
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              description,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildShimmerList() {
-    return ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: 5,
-      itemBuilder: (context, index) {
-        return Container(
-          width: 150,
-          margin: const EdgeInsets.only(right: 12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.white,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Shimmer.fromColors(
-                baseColor: Colors.grey.shade300,
-                highlightColor: Colors.grey.shade100,
-                child: Container(
-                  height: 100,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Shimmer.fromColors(
-                baseColor: Colors.grey.shade300,
-                highlightColor: Colors.grey.shade100,
-                child: Container(
-                  height: 12,
-                  width: 100,
-                  color: Colors.white,
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  /// **Shimmer Effect for Image Loading**
-  Widget _buildShimmerImage() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
-      child: Container(
-        height: 250,
-        width: double.infinity,
-        color: Colors.white,
-      ),
-    );
-  }
-
-  /// **Shimmer for Entire Slider**
-  Widget _buildShimmerSlider() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
-      child: Container(
-        height: 250,
-        width: double.infinity,
-        color: Colors.white,
-      ),
-    );
-  }
-
-  /// **Shimmer for Organizer List**
-  Widget _buildShimmerOrganizers() {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: 3, // Show shimmer for 3 placeholder organizers
-      itemBuilder: (context, index) {
-        return ListTile(
-          leading: Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.grey.shade100,
-            child: const CircleAvatar(radius: 25, backgroundColor: Colors.white),
-          ),
-          title: Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.grey.shade100,
-            child: Container(height: 14, width: 100, color: Colors.white),
-          ),
-          subtitle: Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.grey.shade100,
-            child: Container(height: 12, width: 150, color: Colors.white),
-          ),
-          trailing: Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.grey.shade100,
-            child: const Icon(Icons.chat_bubble_outline, color: Colors.white),
-          ),
-        );
-      },
-    );
-  }
-
-  /// **Organizer List Tile**
-  Widget _buildOrganizerTile(String name, String email, int index) {
-    return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 4),
-      leading: CircleAvatar(
-        backgroundColor: Colors.grey[200],
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: "https://i.pravatar.cc/150?img=${index + 1}", // Random profile image
-            width: 50,
-            height: 50,
-            fit: BoxFit.cover,
-            placeholder: (context, url) => const CircularProgressIndicator(),
-            errorWidget: (context, url, error) => const Icon(Icons.person, color: Colors.grey),
-          ),
-        ),
-      ),
-      title: Text(
-        name,
-        style: poppinsMedium.copyWith(fontSize: 16),
-      ),
-      subtitle: Text(
-        email,
-        style: const TextStyle(color: Colors.black54, fontSize: 14),
-      ),
-      trailing: const Icon(Icons.chat_bubble_outline, color: Colors.black),
-      onTap: () {
-        // Open Chat (if needed)
-      },
     );
   }
 }

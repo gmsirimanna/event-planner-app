@@ -1,23 +1,21 @@
 import 'dart:async';
-import 'package:event_planner/screens/login/welcome_screen.dart';
+import 'package:event_planner/main.dart';
 import 'package:event_planner/screens/navigation/nav_bar_screen.dart';
+import 'package:event_planner/utils/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:event_planner/helper/route_helper.dart';
 import 'package:event_planner/screens/login/login_screen.dart';
 import 'package:event_planner/utils/images.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  late SharedPreferences _prefs;
-
   @override
   void dispose() {
     super.dispose();
@@ -31,23 +29,6 @@ class _SplashScreenState extends State<SplashScreen> {
     });
   }
 
-  /// Check login status and retrieve UUID
-  Future<void> _checkLoginStatus() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-    String? userUUID = prefs.getString('userUUID'); // Retrieve UUID
-
-    Future.delayed(const Duration(seconds: 1), () {
-      if (isLoggedIn && userUUID != null) {
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil(RouteHelper.navBar, (route) => false, arguments: NavBarScreen());
-      } else {
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil(RouteHelper.login, (route) => false, arguments: LoginScreen());
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,5 +39,22 @@ class _SplashScreenState extends State<SplashScreen> {
         height: 60,
       )),
     );
+  }
+
+  /// Check login status and retrieve UUID
+  Future<void> _checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool(AppConstants.IS_LOGGED_IN) ?? false;
+    String? userUUID = prefs.getString(AppConstants.UUID); // Retrieve UUID
+
+    Future.delayed(const Duration(seconds: 1), () {
+      if (isLoggedIn && userUUID != null) {
+        Navigator.of(MyApp.navigatorKey.currentContext!)
+            .pushNamedAndRemoveUntil(RouteHelper.navBar, (route) => false, arguments: NavBarScreen());
+      } else {
+        Navigator.of(MyApp.navigatorKey.currentContext!)
+            .pushNamedAndRemoveUntil(RouteHelper.login, (route) => false, arguments: LoginScreen());
+      }
+    });
   }
 }

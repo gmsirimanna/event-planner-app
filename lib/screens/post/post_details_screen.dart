@@ -1,6 +1,8 @@
 import 'package:event_planner/data/model/comment_model.dart';
 import 'package:event_planner/data/model/post_model.dart';
 import 'package:event_planner/provider/post_provider.dart';
+import 'package:event_planner/screens/post/widgets/comment_list_widget.dart';
+import 'package:event_planner/screens/post/widgets/shimmer_widgets.dart';
 import 'package:event_planner/utils/color_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -65,9 +67,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 const SizedBox(height: 8),
 
                 if (postProvider.isLoading)
-                  _buildShimmerComments() // Show shimmer if loading
+                  CommentShimmerWidget() // Show shimmer if loading
                 else if (postProvider.comments.isNotEmpty)
-                  _buildCommentList(postProvider.comments)
+                  CommentListWidget(comments: postProvider.comments)
                 else
                   const Center(child: Text("No comments available", style: TextStyle(color: Colors.grey))),
               ],
@@ -75,70 +77,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           );
         },
       ),
-    );
-  }
-
-  /// **Shimmer Loading for Comments**
-  Widget _buildShimmerComments() {
-    return Column(
-      children: List.generate(
-        3,
-        (index) => Shimmer.fromColors(
-          baseColor: Colors.grey.shade300,
-          highlightColor: Colors.grey.shade100,
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 6),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(height: 14, width: 100, color: Colors.white), // Name Placeholder
-                const SizedBox(height: 4),
-                Container(height: 12, width: double.infinity, color: Colors.white), // Comment Placeholder
-                const SizedBox(height: 4),
-                Container(height: 12, width: 200, color: Colors.white),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// **Build Comment List**
-  Widget _buildCommentList(List<CommentModel> comments) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: comments
-          .map(
-            (comment) => Container(
-              margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    comment.name,
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    comment.body,
-                    style: const TextStyle(fontSize: 14, color: Colors.black87),
-                  ),
-                ],
-              ),
-            ),
-          )
-          .toList(),
     );
   }
 }

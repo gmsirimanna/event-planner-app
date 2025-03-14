@@ -6,7 +6,11 @@ class AllPhotosScreen extends StatelessWidget {
   final List<ImageModel> imageModels;
   final List<String> images;
 
-  const AllPhotosScreen({Key? key, required this.images, required this.imageModels}) : super(key: key);
+  const AllPhotosScreen({
+    super.key,
+    required this.images,
+    required this.imageModels,
+  });
 
   @override
   Widget build(BuildContext context) {

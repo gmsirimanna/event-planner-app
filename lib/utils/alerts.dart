@@ -7,8 +7,8 @@ import 'package:event_planner/utils/dimensions.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-customSnackBar(BuildContext context, String msg, Color color) =>
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+customSnackBar(String msg, Color color) =>
+    ScaffoldMessenger.of(MyApp.navigatorKey.currentContext!).showSnackBar(SnackBar(
       duration: const Duration(seconds: 2),
       content: Text(
         msg,

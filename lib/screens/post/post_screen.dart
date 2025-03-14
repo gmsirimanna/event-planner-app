@@ -1,13 +1,11 @@
-import 'package:event_planner/helper/route_helper.dart';
 import 'package:event_planner/provider/post_provider.dart';
-import 'package:event_planner/screens/post/post_details_screen.dart';
-import 'package:event_planner/utils/color_resources.dart';
+import 'package:event_planner/screens/post/widgets/post_tile_widget.dart';
+import 'package:event_planner/screens/post/widgets/shimmer_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 class PostListScreen extends StatefulWidget {
-  const PostListScreen({Key? key}) : super(key: key);
+  const PostListScreen({super.key});
 
   @override
   State<PostListScreen> createState() => _PostListScreenState();
@@ -65,12 +63,12 @@ class _PostListScreenState extends State<PostListScreen> {
                 : postProvider.posts.length + (postProvider.hasMore ? 1 : 0),
             itemBuilder: (context, index) {
               if (postProvider.isLoadingPosts) {
-                return _buildShimmerPostTile();
+                return PostTileShimmerWidget();
               }
 
               if (index < postProvider.posts.length) {
                 final post = postProvider.posts[index];
-                return _buildPostTile(post);
+                return PostTileWidget(context: context, post: post);
               } else {
                 // Loader at bottom for pagination
                 return const Padding(
@@ -81,98 +79,6 @@ class _PostListScreenState extends State<PostListScreen> {
             },
           );
         },
-      ),
-    );
-  }
-
-  /// **Shimmer Placeholder**
-  Widget _buildShimmerPostTile() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 6),
-        padding: const EdgeInsets.all(18),
-        height: 120,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 30,
-              height: 30,
-              color: Colors.white,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Container(
-                height: 16,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(width: 8),
-            const Icon(Icons.arrow_forward_ios, size: 18, color: Colors.grey),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// **Post Tile**
-  Widget _buildPostTile(post) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(
-          context,
-          RouteHelper.getPostDetailRoute(post),
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 3,
-              spreadRadius: 1,
-            )
-          ],
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Post #${post.id}",
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold, color: ColorResources.primaryColor),
-                  ),
-                  Text(
-                    post.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w500),
-                  ),
-                  Text(
-                    post.body,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 14, color: Colors.black87),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            const Icon(Icons.arrow_forward_ios, size: 18, color: ColorResources.primaryColor),
-          ],
-        ),
       ),
     );
   }

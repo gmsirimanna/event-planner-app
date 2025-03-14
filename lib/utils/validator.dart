@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class Validators {
   // Validate Email
   static String? validateEmail(String? value) {

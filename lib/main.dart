@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:event_planner/data/repository/post_repo.dart';
 import 'package:event_planner/provider/auth_provider.dart';
 import 'package:event_planner/provider/connectivity_provider.dart';
 import 'package:event_planner/provider/home_provider.dart';
@@ -56,8 +55,9 @@ class LifecycleObserver extends WidgetsBindingObserver {
 }
 
 class MyApp extends StatelessWidget {
-  static final navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+  const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
     return Consumer<ConnectivityProvider>(builder: (context, connectivityProvider, child) {

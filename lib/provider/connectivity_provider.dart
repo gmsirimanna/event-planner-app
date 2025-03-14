@@ -7,32 +7,23 @@ import 'package:flutter/material.dart';
 class ConnectivityProvider with ChangeNotifier {
   final Connectivity _connectivity = Connectivity();
   bool _isConnected = true;
-  StreamSubscription<List<ConnectivityResult>>? _subscription;
-  Timer? _timer; // Periodic timer for checking internet
+  late StreamSubscription _subscription;
   BuildContext? _dialogContext; // Holds dialog context
 
   bool get isConnected => _isConnected;
 
   ConnectivityProvider() {
     _listenToConnectivityChanges();
-    _startPeriodicInternetCheck(); // Start checking internet every second
   }
 
   /// **Listen for connectivity changes & check real internet instantly**
   void _listenToConnectivityChanges() {
-    _subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) {
-      // Received changes in available connectivity types!
+    _subscription = _connectivity.onConnectivityChanged.listen((List<ConnectivityResult> results) async {
+      _updateInternetStatus();
     });
 
     // Initial check when provider is created
     _updateInternetStatus();
-  }
-
-  /// **Start checking internet every second**
-  void _startPeriodicInternetCheck() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
-      _updateInternetStatus();
-    });
   }
 
   /// **Check Real Internet Access & Update Instantly**
@@ -69,13 +60,11 @@ class ConnectivityProvider with ChangeNotifier {
     if (MyApp.navigatorKey.currentContext == null) return;
 
     Future.delayed(Duration.zero, () {
-      if (MyApp.navigatorKey.currentContext == null) return; // Re-check before showing dialog
-
       showDialog(
         context: MyApp.navigatorKey.currentContext!,
-        barrierDismissible: false, // User cannot dismiss it
+        barrierDismissible: false, // Cannot dismiss
         builder: (context) {
-          _dialogContext = context; // Store context to prevent multiple alerts
+          _dialogContext = context;
           return AlertDialog(
             title: const Text("No Internet"),
             content: const Text("You are offline. Please check your connection."),
@@ -101,8 +90,7 @@ class ConnectivityProvider with ChangeNotifier {
 
   @override
   void dispose() {
-    _subscription!.cancel();
-    _timer?.cancel(); // Cancel the periodic check when provider is disposed
+    _subscription.cancel();
     super.dispose();
   }
 }

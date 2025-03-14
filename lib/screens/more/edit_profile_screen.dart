@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_planner/provider/auth_provider.dart';
+import 'package:event_planner/utils/app_constants.dart';
 import 'package:event_planner/utils/color_resources.dart';
 import 'package:event_planner/utils/styles.dart';
 import 'package:event_planner/utils/alerts.dart';
@@ -27,7 +28,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     super.initState();
     final authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
-
     // Initialize controllers with current user data
     firstNameController = TextEditingController(text: authProvider.userModel?.firstName ?? "");
     lastNameController = TextEditingController(text: authProvider.userModel?.lastName ?? "");
@@ -40,66 +40,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       authProvider.onChange(val: false);
     });
-  }
-
-  void _setListeners(AuthenticationProvider authProvider) {
-    firstNameController.addListener(() => authProvider.onChange());
-    lastNameController.addListener(() => authProvider.onChange());
-    phoneController.addListener(() => authProvider.onChange());
-    addressController.addListener(() => authProvider.onChange());
-  }
-
-  /// Submit updated user data to Firestore
-  Future<void> _saveProfile(AuthenticationProvider authProvider) async {
-    if (!authProvider.hasChanged && authProvider.selectedImage == null) {
-      customSnackBar(context, "No changes detected!", Colors.orange);
-      return;
-    }
-
-    // Validate fields manually
-    String? firstNameError = Validators.validateName(firstNameController.text);
-    if (firstNameError != null) {
-      customSnackBar(context, "Invalid First Name", Colors.red);
-      return;
-    }
-
-    String? lastNameError = Validators.validateName(lastNameController.text);
-    if (lastNameError != null) {
-      customSnackBar(context, "Invalid Last Name", Colors.red);
-      return;
-    }
-
-    String? phoneError = Validators.validatePhoneNumber(phoneController.text);
-    if (phoneError != null) {
-      customSnackBar(context, "Invalid Phone Number", Colors.red);
-      return;
-    }
-
-    String? addressError = Validators.validateAddress(addressController.text);
-    if (addressError != null) {
-      customSnackBar(context, "Invalid Address", Colors.red);
-      return;
-    }
-
-    // Upload Image if selected
-    String? imageUrlNew;
-    if (authProvider.selectedImage != null) {
-      imageUrlNew = await authProvider.uploadProfileImage();
-    } else {
-      imageUrlNew = imageUrl;
-    }
-
-    await authProvider.createUpdateUserData(
-      firstName: firstNameController.text,
-      lastName: lastNameController.text,
-      email: authProvider.userModel?.email ?? "",
-      phoneNumber: phoneController.text,
-      mailingAddress: addressController.text,
-      profileImageUrl: imageUrlNew!,
-    );
-
-    if (!mounted) return;
-    Navigator.pop(context); // Go back after saving
   }
 
   @override
@@ -247,5 +187,66 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
       ),
     );
+  }
+
+  void _setListeners(AuthenticationProvider authProvider) {
+    firstNameController.addListener(() => authProvider.onChange());
+    lastNameController.addListener(() => authProvider.onChange());
+    phoneController.addListener(() => authProvider.onChange());
+    addressController.addListener(() => authProvider.onChange());
+  }
+
+  /// Submit updated user data to Firestore
+  Future<void> _saveProfile(AuthenticationProvider authProvider) async {
+    if (!authProvider.hasChanged && authProvider.selectedImage == null) {
+      customSnackBar(AppConstants.noChanges, Colors.orange);
+      return;
+    }
+
+    // Validate fields manually
+    String? firstNameError = Validators.validateName(firstNameController.text);
+    if (firstNameError != null) {
+      customSnackBar(AppConstants.invalidFirstName, Colors.red);
+      return;
+    }
+
+    String? lastNameError = Validators.validateName(lastNameController.text);
+    if (lastNameError != null) {
+      customSnackBar(AppConstants.invalidLastName, Colors.red);
+      return;
+    }
+
+    String? phoneError = Validators.validatePhoneNumber(phoneController.text);
+    if (phoneError != null) {
+      customSnackBar(AppConstants.invalidPhoneNumber, Colors.red);
+      return;
+    }
+
+    String? addressError = Validators.validateAddress(addressController.text);
+    if (addressError != null) {
+      customSnackBar(AppConstants.invalidAddress, Colors.red);
+      return;
+    }
+
+    // Upload Image if selected
+    String? imageUrlNew;
+    if (authProvider.selectedImage != null) {
+      imageUrlNew = await authProvider.uploadProfileImage();
+    } else {
+      imageUrlNew = imageUrl;
+    }
+
+    await authProvider.createUpdateUserData(
+      firstName: firstNameController.text,
+      lastName: lastNameController.text,
+      email: authProvider.userModel?.email ?? "",
+      phoneNumber: phoneController.text,
+      mailingAddress: addressController.text,
+      profileImageUrl: imageUrlNew!,
+    );
+
+    if (!mounted) return;
+    customSnackBar(AppConstants.updateSuccess, Colors.green);
+    Navigator.pop(context); // Go back after saving
   }
 }

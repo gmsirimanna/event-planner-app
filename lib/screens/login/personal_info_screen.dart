@@ -3,6 +3,7 @@ import 'package:event_planner/main.dart';
 import 'package:event_planner/provider/auth_provider.dart';
 import 'package:event_planner/screens/navigation/nav_bar_screen.dart';
 import 'package:event_planner/utils/alerts.dart';
+import 'package:event_planner/utils/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../resuable_widgets/custom_button.dart';
@@ -24,65 +25,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
 
-  /// **Method to Validate Fields and Submit Profile**
-  Future<void> _submitProfile(AuthenticationProvider authProvider) async {
-    // Validate fields manually
-    String? firstNameError = Validators.validateName(firstNameController.text);
-    if (firstNameError != null) {
-      customSnackBar(context, "Invalid First Name", Colors.red);
-      return;
-    }
-
-    String? lastNameError = Validators.validateName(lastNameController.text);
-    if (lastNameError != null) {
-      customSnackBar(context, "Invalid Last Name", Colors.red);
-      return;
-    }
-
-    String? emailError = Validators.validateEmail(emailController.text);
-    if (emailError != null) {
-      customSnackBar(context, "Invalid Email", Colors.red);
-      return;
-    }
-
-    String? phoneError = Validators.validatePhoneNumber(phoneController.text);
-    if (phoneError != null) {
-      customSnackBar(context, "Invalid Phone Number", Colors.red);
-      return;
-    }
-
-    String? addressError = Validators.validateAddress(addressController.text);
-    if (addressError != null) {
-      customSnackBar(context, "Invalid Address", Colors.red);
-      return;
-    }
-
-    // Upload Image if selected
-    String? imageUrl;
-    if (authProvider.selectedImage != null) {
-      imageUrl = await authProvider.uploadProfileImage();
-    }
-
-    // Submit data to Firestore
-    await authProvider.createUpdateUserData(
-      firstName: firstNameController.text,
-      lastName: lastNameController.text,
-      email: emailController.text,
-      phoneNumber: phoneController.text,
-      mailingAddress: addressController.text,
-      profileImageUrl: imageUrl!,
-    );
-
-    if (authProvider.errorMessage != null) {
-      customSnackBar(context, authProvider.errorMessage ?? "Something went wrong", Colors.red);
-    } else {
-      // Show success message
-      customSnackBar(context, "Profile updated successfully!", Colors.green);
-      Navigator.of(MyApp.navigatorKey.currentContext!)
-          .pushNamedAndRemoveUntil(RouteHelper.navBar, (route) => false, arguments: NavBarScreen());
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthenticationProvider>(context);
@@ -101,7 +43,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
                     // Title
                     Text(
-                      "Personal info",
+                      AppConstants.personalInfo,
                       style: poppinsBold.copyWith(
                         fontSize: 24,
                       ),
@@ -111,7 +53,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
                     // Subtitle
                     const Text(
-                      "You can add your personal data now or do it later",
+                      AppConstants.personalInfoDes,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
@@ -213,5 +155,64 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         ),
       ),
     );
+  }
+
+  /// **Method to Validate Fields and Submit Profile**
+  Future<void> _submitProfile(AuthenticationProvider authProvider) async {
+    // Validate fields manually
+    String? firstNameError = Validators.validateName(firstNameController.text);
+    if (firstNameError != null) {
+      customSnackBar(AppConstants.invalidFirstName, Colors.red);
+      return;
+    }
+
+    String? lastNameError = Validators.validateName(lastNameController.text);
+    if (lastNameError != null) {
+      customSnackBar(AppConstants.invalidLastName, Colors.red);
+      return;
+    }
+
+    String? emailError = Validators.validateEmail(emailController.text);
+    if (emailError != null) {
+      customSnackBar(AppConstants.invalidEmail, Colors.red);
+      return;
+    }
+
+    String? phoneError = Validators.validatePhoneNumber(phoneController.text);
+    if (phoneError != null) {
+      customSnackBar(AppConstants.invalidPhoneNumber, Colors.red);
+      return;
+    }
+
+    String? addressError = Validators.validateAddress(addressController.text);
+    if (addressError != null) {
+      customSnackBar(AppConstants.invalidAddress, Colors.red);
+      return;
+    }
+
+    // Upload Image if selected
+    String? imageUrl;
+    if (authProvider.selectedImage != null) {
+      imageUrl = await authProvider.uploadProfileImage();
+    }
+
+    // Submit data to Firestore
+    await authProvider.createUpdateUserData(
+      firstName: firstNameController.text,
+      lastName: lastNameController.text,
+      email: emailController.text,
+      phoneNumber: phoneController.text,
+      mailingAddress: addressController.text,
+      profileImageUrl: imageUrl!,
+    );
+
+    if (authProvider.errorMessage != null) {
+      customSnackBar(authProvider.errorMessage ?? AppConstants.somethingWrong, Colors.red);
+    } else {
+      // Show success message
+      customSnackBar(AppConstants.updateSuccess, Colors.green);
+      Navigator.of(MyApp.navigatorKey.currentContext!)
+          .pushNamedAndRemoveUntil(RouteHelper.navBar, (route) => false, arguments: NavBarScreen());
+    }
   }
 }

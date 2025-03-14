@@ -1,7 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:event_planner/data/repository/exception/api_error_handler.dart';
 import 'package:event_planner/main.dart';
 import 'package:event_planner/provider/nav_bar_provider.dart';
 import 'package:event_planner/screens/navigation/nav_bar_screen.dart';
+import 'package:event_planner/utils/app_constants.dart';
 import 'package:event_planner/utils/color_resources.dart';
 import 'package:event_planner/utils/styles.dart';
 import 'package:event_planner/utils/alerts.dart';
@@ -17,7 +19,7 @@ import 'signup_screen.dart';
 import 'welcome_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -26,50 +28,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-
-  void handleLogin(AuthenticationProvider authProvider, String username, String password) {
-    // Validate username (email in this case)
-    String? usernameError = Validators.validateEmail(username);
-    if (usernameError != null) {
-      customSnackBar(context, "msg", Colors.red);
-      return; // Stop login process
-    }
-
-    // Validate password
-    String? passwordError = Validators.validatePassword(passwordController.text.trim());
-    if (passwordError != null) {
-      customSnackBar(context, "msg", Colors.red);
-      return; // Stop login process
-    }
-
-    // Proceed with login if validations pass
-    authProvider
-        .signIn(
-      username.trim(),
-      password.trim(),
-    )
-        .then((_) async {
-      if (authProvider.user != null) {
-        final navBarProvider = Provider.of<NavBarProvider>(context, listen: false);
-        navBarProvider.setNavBarIndex(0);
-
-        //Keep a flag
-        bool isAvailable = await authProvider.saveUserData();
-
-        if (!isAvailable) {
-          Navigator.of(MyApp.navigatorKey.currentContext!)
-              .pushNamedAndRemoveUntil(RouteHelper.welcome, (route) => false, arguments: WelcomeScreen());
-        } else {
-          Navigator.of(MyApp.navigatorKey.currentContext!)
-              .pushNamedAndRemoveUntil(RouteHelper.navBar, (route) => false, arguments: NavBarScreen());
-        }
-      } else {
-        customSnackBar(context, "USER NOT FOUND, PLEASE SIGN IN", Colors.red);
-      }
-    }).catchError((error) {
-      customSnackBar(context, "ERROR", Colors.red);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -200,5 +158,44 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  void handleLogin(AuthenticationProvider authProvider, String username, String password) {
+    // Validate username (email in this case)
+    String? usernameError = Validators.validateEmail(username);
+    if (usernameError != null) {
+      customSnackBar(AppConstants.invalidEmail, Colors.red);
+      return; // Stop login process
+    }
+
+    // Validate password
+    String? passwordError = Validators.validatePassword(password.trim());
+    if (passwordError != null) {
+      customSnackBar(AppConstants.invalidPassword, Colors.red);
+      return; // Stop login process
+    }
+
+    // Proceed with login if validations pass
+    authProvider.signIn(username.trim(), password.trim()).then((_) async {
+      if (authProvider.user != null) {
+        final navBarProvider = Provider.of<NavBarProvider>(context, listen: false);
+        navBarProvider.setNavBarIndex(0);
+
+        // Keep a flag for login again
+        bool isAvailable = await authProvider.saveUserData();
+
+        if (!isAvailable) {
+          Navigator.of(MyApp.navigatorKey.currentContext!)
+              .pushNamedAndRemoveUntil(RouteHelper.welcome, (route) => false, arguments: WelcomeScreen());
+        } else {
+          Navigator.of(MyApp.navigatorKey.currentContext!)
+              .pushNamedAndRemoveUntil(RouteHelper.navBar, (route) => false, arguments: NavBarScreen());
+        }
+      } else {
+        customSnackBar(AppConstants.userNotFound, Colors.red);
+      }
+    }).catchError((error) {
+      customSnackBar(ApiErrorHandler.getMessage(error), Colors.red);
+    });
   }
 }

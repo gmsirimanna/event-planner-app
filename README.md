@@ -1,6 +1,6 @@
 # Gayan Sirimanna (Flutter ATL Candidate - +94719858638 / gmsirimanna@gmail.com)
 
-# NEWS APP
+# EVENT PLANNER APP
 
 UI Link
 ```

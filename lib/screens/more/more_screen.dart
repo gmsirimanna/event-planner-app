@@ -83,10 +83,11 @@ class _MoreScreenState extends State<MoreScreen> {
     return ListTile(
       leading: const Icon(Icons.logout, color: Colors.red),
       title: Text("Logout", style: poppinsMedium.copyWith(color: Colors.red, fontSize: 16)),
-      onTap: () {
-        // Provider.of<AuthenticationProvider>(context, listen: false).signOut();
+      onTap: () async {
+        Provider.of<AuthenticationProvider>(context, listen: false).signOut();
+
         Navigator.of(MyApp.navigatorKey.currentContext!)
-            .pushNamedAndRemoveUntil(RouteHelper.login, (route) => false, arguments: LoginScreen());
+            .pushNamedAndRemoveUntil(RouteHelper.login, (route) => false);
       },
     );
   }

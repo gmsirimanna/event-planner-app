@@ -27,18 +27,25 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      initPrefs();
+      _checkLoginStatus();
     });
   }
 
-  initPrefs() async {
-    Future.delayed(const Duration(seconds: 1), () => _route());
-  }
+  /// Check login status and retrieve UUID
+  Future<void> _checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    String? userUUID = prefs.getString('userUUID'); // Retrieve UUID
 
-  void _route() {
-    Navigator.of(context)
-        // .pushNamedAndRemoveUntil(RouteHelper.welcome, (route) => false, arguments: WelcomeScreen());
-        .pushNamedAndRemoveUntil(RouteHelper.navBar, (route) => false, arguments: NavBarScreen());
+    Future.delayed(const Duration(seconds: 1), () {
+      if (isLoggedIn && userUUID != null) {
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil(RouteHelper.navBar, (route) => false, arguments: NavBarScreen());
+      } else {
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil(RouteHelper.login, (route) => false, arguments: LoginScreen());
+      }
+    });
   }
 
   @override

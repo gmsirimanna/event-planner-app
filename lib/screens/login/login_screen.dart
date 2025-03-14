@@ -24,8 +24,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController emailController = TextEditingController(text: "test.vegasoftware@gmail.com");
-  final TextEditingController passwordController = TextEditingController(text: "Gayan@14");
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   void handleLogin(AuthenticationProvider authProvider, String username, String password) {
     // Validate username (email in this case)
@@ -48,11 +48,15 @@ class _LoginScreenState extends State<LoginScreen> {
       username.trim(),
       password.trim(),
     )
-        .then((_) {
+        .then((_) async {
       if (authProvider.user != null) {
         final navBarProvider = Provider.of<NavBarProvider>(context, listen: false);
         navBarProvider.setNavBarIndex(0);
-        if (authProvider.user!.metadata.creationTime == authProvider.user!.metadata.lastSignInTime) {
+
+        //Keep a flag
+        bool isAvailable = await authProvider.saveUserData();
+
+        if (!isAvailable) {
           Navigator.of(MyApp.navigatorKey.currentContext!)
               .pushNamedAndRemoveUntil(RouteHelper.welcome, (route) => false, arguments: WelcomeScreen());
         } else {
@@ -60,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
               .pushNamedAndRemoveUntil(RouteHelper.navBar, (route) => false, arguments: NavBarScreen());
         }
       } else {
-        customSnackBar(context, "USER NOT FOUND", Colors.red);
+        customSnackBar(context, "USER NOT FOUND, PLEASE SIGN IN", Colors.red);
       }
     }).catchError((error) {
       customSnackBar(context, "ERROR", Colors.red);

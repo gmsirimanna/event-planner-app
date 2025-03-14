@@ -175,6 +175,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           customSnackBar(context, "SUCCESS", Colors.green);
           Navigator.of(context).pushReplacementNamed(RouteHelper.login, arguments: LoginScreen());
         }
+      } else {
+        customSnackBar(context, authProvider.errorMessage ?? "Something went wrong", Colors.red);
       }
     }).catchError((error) {
       // Fluttertoast.showToast(msg: "Signup failed: ${error.toString()}", toastLength: Toast.LENGTH_LONG, gravity: ToastGravity.BOTTOM);

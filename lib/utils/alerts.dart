@@ -1,8 +1,11 @@
+import 'package:event_planner/main.dart';
 import 'package:event_planner/provider/auth_provider.dart';
+import 'package:event_planner/provider/connectivity_provider.dart';
 import 'package:event_planner/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:event_planner/utils/dimensions.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 customSnackBar(BuildContext context, String msg, Color color) =>
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -50,5 +53,24 @@ showImagePicker(BuildContext context, AuthenticationProvider authProvider) {
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
+  );
+}
+
+void showNoInternetDialog(BuildContext context) {
+  showDialog(
+    context: MyApp.navigatorKey.currentContext!,
+    barrierDismissible: false, // User cannot dismiss it
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("No Internet"),
+        content: const Text("You are offline. Please check your connection."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("OK"),
+          ),
+        ],
+      );
+    },
   );
 }

@@ -1,4 +1,7 @@
+import 'package:event_planner/utils/alerts.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:event_planner/provider/connectivity_provider.dart';
 
 class CustomButton extends StatelessWidget {
   final String buttonText;
@@ -11,7 +14,7 @@ class CustomButton extends StatelessWidget {
   final bool iconBeforeText;
   final double radius;
   final double height;
-  final bool isLoading; // New loading state
+  final bool isLoading;
 
   const CustomButton({
     Key? key,
@@ -25,23 +28,39 @@ class CustomButton extends StatelessWidget {
     this.iconBeforeText = false,
     this.radius = 4.0,
     this.height = 50.0,
-    this.isLoading = false, // Default: not loading
+    this.isLoading = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: isLoading ? null : onPressed, // Disable clicks when loading
+      onTap: isLoading
+          ? null
+          : () async {
+              final connectivityProvider = Provider.of<ConnectivityProvider>(context, listen: false);
+              if (!connectivityProvider.isConnected) {
+                showNoInternetDialog(context);
+                return;
+              }
+              onPressed();
+            },
       child: Container(
         height: height,
         decoration: BoxDecoration(
-          color: isLoading
-              ? Colors.grey[400] // Grey when loading
-              : backgroundColor ?? const Color(0xFFCF5D42), // Default color
+          color: isLoading ? Colors.grey[400] : backgroundColor ?? const Color(0xFFCF5D42),
           borderRadius: BorderRadius.circular(radius),
         ),
         child: TextButton(
-          onPressed: isLoading ? null : onPressed,
+          onPressed: isLoading
+              ? null
+              : () async {
+                  final connectivityProvider = Provider.of<ConnectivityProvider>(context, listen: false);
+                  if (!connectivityProvider.isConnected) {
+                    showNoInternetDialog(context);
+                    return;
+                  }
+                  onPressed();
+                },
           style: TextButton.styleFrom(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(radius),

@@ -34,10 +34,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     phoneController = TextEditingController(text: authProvider.userModel?.phoneNumber ?? "");
     addressController = TextEditingController(text: authProvider.userModel?.mailingAddress ?? "");
     imageUrl = authProvider.userModel?.profileImageUrl ?? "";
+
+    _setListeners(authProvider);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      authProvider.onChange(val: false);
+    });
+  }
+
+  void _setListeners(AuthenticationProvider authProvider) {
+    firstNameController.addListener(() => authProvider.onChange());
+    lastNameController.addListener(() => authProvider.onChange());
+    phoneController.addListener(() => authProvider.onChange());
+    addressController.addListener(() => authProvider.onChange());
   }
 
   /// Submit updated user data to Firestore
   Future<void> _saveProfile(AuthenticationProvider authProvider) async {
+    if (!authProvider.hasChanged && authProvider.selectedImage == null) {
+      customSnackBar(context, "No changes detected!", Colors.orange);
+      return;
+    }
+
     // Validate fields manually
     String? firstNameError = Validators.validateName(firstNameController.text);
     if (firstNameError != null) {
@@ -209,7 +227,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               controller: addressController,
               labelText: "Mailing address",
               hintText: "Enter address",
-              validator: Validators.validateEmail,
+              validator: Validators.validateAddress,
               fillColor: ColorResources.secondaryFillColor,
             ),
             const SizedBox(height: 30),

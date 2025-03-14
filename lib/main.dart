@@ -1,7 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:event_planner/data/repository/post_repo.dart';
 import 'package:event_planner/provider/auth_provider.dart';
+import 'package:event_planner/provider/connectivity_provider.dart';
 import 'package:event_planner/provider/home_provider.dart';
 import 'package:event_planner/provider/nav_bar_provider.dart';
+import 'package:event_planner/provider/post_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,10 +31,12 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (ctx) => AuthenticationProvider(di.sl())),
+        ChangeNotifierProvider(create: (ctx) => AuthenticationProvider(di.sl(), di.sl())),
         ChangeNotifierProvider(create: (ctx) => LocalizationProvider(sharedPreferences: di.sl())),
         ChangeNotifierProvider(create: (ctx) => NavBarProvider()),
         ChangeNotifierProvider(create: (ctx) => HomeProvider(homeRepository: di.sl())),
+        ChangeNotifierProvider(create: (ctx) => PostProvider(postRepository: di.sl())),
+        ChangeNotifierProvider(create: (ctx) => ConnectivityProvider()),
       ],
       child: EasyLocalization(
         supportedLocales: const [Locale('en', 'US'), Locale('si', 'LK')],
@@ -55,17 +60,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Sizer(builder: (context, orientation, deviceType) {
-      return MaterialApp(
-        localizationsDelegates: context.localizationDelegates,
-        supportedLocales: context.supportedLocales,
-        locale: context.locale,
-        initialRoute: RouteHelper.splash,
-        onGenerateRoute: RouteHelper.router.generator,
-        debugShowCheckedModeBanner: false,
-        navigatorKey: MyApp.navigatorKey,
-        theme: ThemeData(scaffoldBackgroundColor: Colors.white, fontFamily: 'Poppins'),
-      );
+    return Consumer<ConnectivityProvider>(builder: (context, connectivityProvider, child) {
+      return Sizer(builder: (context, orientation, deviceType) {
+        return MaterialApp(
+          localizationsDelegates: context.localizationDelegates,
+          supportedLocales: context.supportedLocales,
+          locale: context.locale,
+          initialRoute: RouteHelper.splash,
+          onGenerateRoute: RouteHelper.router.generator,
+          debugShowCheckedModeBanner: false,
+          navigatorKey: MyApp.navigatorKey,
+          theme: ThemeData(scaffoldBackgroundColor: Colors.white, fontFamily: 'Poppins'),
+        );
+      });
     });
   }
 }

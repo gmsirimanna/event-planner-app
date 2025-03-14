@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:event_planner/data/repository/exception/api_error_handler.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -58,7 +59,7 @@ class AuthRepository {
         "createdAt": FieldValue.serverTimestamp(), // Store timestamp
       }, SetOptions(merge: true)); // Merge in case of updates
     } catch (e) {
-      throw Exception("Error saving user data: ${e.toString()}");
+      throw Exception(ApiErrorHandler.getMessage(e));
     }
   }
 

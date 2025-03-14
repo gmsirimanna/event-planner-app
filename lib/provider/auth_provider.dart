@@ -6,9 +6,11 @@ import 'package:event_planner/data/repository/auth_repo.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationProvider extends ChangeNotifier {
   final AuthRepository _authRepository;
+  final SharedPreferences prefs;
   User? _user;
   UserModel? _userModel;
   String? _errorMessage;
@@ -18,8 +20,9 @@ class AuthenticationProvider extends ChangeNotifier {
   File? _selectedImage;
   String? _imageUrl;
   String? _userEmail;
+  bool _hasChanged = false;
 
-  AuthenticationProvider(this._authRepository) {
+  AuthenticationProvider(this._authRepository, this.prefs) {
     _authRepository.authStateChanges.listen(_authStateChanged);
   }
 
@@ -29,6 +32,7 @@ class AuthenticationProvider extends ChangeNotifier {
   String? get successMessage => _successMessage;
   String? get userEmail => _userEmail;
   bool get canResend => _canResend;
+  bool get hasChanged => _hasChanged;
   UserModel? get userModel => _userModel;
 
   File? get selectedImage => _selectedImage;
@@ -37,6 +41,11 @@ class AuthenticationProvider extends ChangeNotifier {
   //Listen for auth state changes
   void _authStateChanged(User? user) {
     _user = user;
+    notifyListeners();
+  }
+
+  void onChange({bool val = true}) {
+    _hasChanged = val;
     notifyListeners();
   }
 
@@ -63,6 +72,9 @@ class AuthenticationProvider extends ChangeNotifier {
   // Sign out
   Future<void> signOut() async {
     await _authRepository.signOut();
+
+    await prefs.remove('isLoggedIn');
+    await prefs.remove('userUUID'); // Remove UUID on logout
   }
 
   // Register
@@ -145,27 +157,16 @@ class AuthenticationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  //// Fetch user data from Firestore and return as a UserModel
-  Future<void> fetchUserData() async {
+  Future<bool> checkUserAvailable() async {
     try {
-      _isLoading = true;
-      notifyListeners();
-
       final _firebaseUser = FirebaseAuth.instance.currentUser;
-      if (_firebaseUser == null) return;
+      if (_firebaseUser == null) return false;
 
-      DocumentSnapshot? docSnapshot = await _authRepository.getUserData(_firebaseUser!.uid);
+      DocumentSnapshot? docSnapshot = await _authRepository.getUserData(_firebaseUser.uid);
 
-      if (docSnapshot != null && docSnapshot.exists) {
-        Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
-        _userModel = UserModel.fromMap(_firebaseUser!.uid, data);
-        notifyListeners();
-      }
+      return docSnapshot != null && docSnapshot.exists;
     } catch (e) {
-      _errorMessage = "Error fetching user data";
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+      return false;
     }
   }
 
@@ -199,5 +200,18 @@ class AuthenticationProvider extends ChangeNotifier {
       _imageUrl = await _authRepository.uploadImageToFirebase(_selectedImage!);
       return _imageUrl;
     }
+  }
+
+  Future<bool> saveUserData() async {
+    _isLoading = true;
+    notifyListeners();
+    final isAvailable = await checkUserAvailable();
+    if (isAvailable) {
+      await prefs.setBool('isLoggedIn', true);
+      await prefs.setString('userUUID', user?.uid ?? ""); // Store UUID
+    }
+    _isLoading = false;
+    notifyListeners();
+    return isAvailable;
   }
 }

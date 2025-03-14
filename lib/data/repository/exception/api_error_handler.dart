@@ -1,7 +1,5 @@
-
 import 'package:dio/dio.dart';
-
-import '../../base/error_response.dart';
+import 'package:event_planner/data/base/error_response.dart';
 
 class ApiErrorHandler {
   static dynamic getMessage(error) {
@@ -25,18 +23,15 @@ class ApiErrorHandler {
             case DioExceptionType.cancel:
               break;
             case DioExceptionType.connectionError:
-              errorDescription = "You are not connected to the internet right now. Please check your connection.";
+              errorDescription =
+                  "You are not connected to the internet right now. Please check your connection.";
               break;
             case DioExceptionType.unknown:
               errorDescription = "Invalid Token";
               break;
-            default:
-              ErrorResponse errorResponse = ErrorResponse.fromJson(error.response!.data);
-              if (errorResponse.errors != null && errorResponse.errors!.isNotEmpty) {
-                errorDescription = errorResponse;
-              } else {
-                errorDescription = "Failed to load data - status code: ${error.response!.statusCode}";
-              }
+            case DioExceptionType.badResponse:
+              errorDescription = "Unexpected error occured";
+              throw UnimplementedError();
           }
         } else {
           errorDescription = "Unexpected error occured";

@@ -49,4 +49,3 @@ class Errors {
     return map;
   }
 }
-

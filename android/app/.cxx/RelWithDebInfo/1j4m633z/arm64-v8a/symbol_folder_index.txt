@@ -1,0 +1,1 @@
+/Users/gayansirimanna/VEGA/Personal/Personal workspace/event-planner-app/build/app/intermediates/cxx/RelWithDebInfo/1j4m633z/obj/arm64-v8a

@@ -107,7 +107,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                 CustomButton(
                   buttonText: tr("login"),
-                  icon: Icons.arrow_forward,
+                  icon: Icons.arrow_back,
+                  iconBeforeText: true,
                   onPressed: () {
                     Navigator.pop(context);
                   },

@@ -43,6 +43,11 @@ The Event Planner App was developed from scratch in 3 days, focusing on user exp
 
 ```
 
+## Firebase Functions for Push Notifications:
+
+<img width="1208" alt="fireabse fuctions" src="https://github.com/user-attachments/assets/309c7e66-c5d6-4fec-a9e1-249d4bc90ec4" />
+
+
 ## How to Use
 
 **Step 1:**
@@ -105,7 +110,7 @@ App useage
 
 ```
 
-## Checkout working demo from here
+## Checkout working demo + apk file from here
 
 ```
 https://drive.google.com/drive/folders/1P06m74tYLSmPauWITRzDetJDS_Ny4YTd?usp=sharing

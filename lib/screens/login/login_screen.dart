@@ -127,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.1),
               if (authProvider.errorMessage != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 12),

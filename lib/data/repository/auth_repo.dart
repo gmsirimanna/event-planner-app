@@ -46,7 +46,8 @@ class AuthRepository {
     required String email,
     required String phoneNumber,
     required String mailingAddress,
-    required String profileImageUrl, // Uploaded image URL
+    required String profileImageUrl,
+    required String fcmToken,
   }) async {
     try {
       await _firestore.collection("users").doc(userId).set({
@@ -55,6 +56,7 @@ class AuthRepository {
         "email": email,
         "phoneNumber": phoneNumber,
         "mailingAddress": mailingAddress,
+        "fcmToken": fcmToken,
         "profileImageUrl": profileImageUrl,
         "createdAt": FieldValue.serverTimestamp(), // Store timestamp
       }, SetOptions(merge: true)); // Merge in case of updates

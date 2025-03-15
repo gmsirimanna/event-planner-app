@@ -8,6 +8,7 @@ class AppConstants {
   static const String LANGUAGE_CODE = 'language_code';
   static const String IS_LOGGED_IN = 'isLoggedIn';
   static const String UUID = 'userUUID';
+  static const String USERNAME = 'userName';
 
   //Const Strings
 

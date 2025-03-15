@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_planner/data/model/user_model.dart';
 import 'package:event_planner/data/repository/auth_repo.dart';
+import 'package:event_planner/utils/app_constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -37,6 +39,7 @@ class AuthenticationProvider extends ChangeNotifier {
 
   File? get selectedImage => _selectedImage;
   String? get imageUrl => _imageUrl;
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   //Listen for auth state changes
   void _authStateChanged(User? user) {
@@ -57,11 +60,6 @@ class AuthenticationProvider extends ChangeNotifier {
       await _authRepository.signIn(email, password);
       _errorMessage = null;
     } on FirebaseAuthException catch (e) {
-      // if (e.message?.contains("incorrect") ?? false) {
-      //   _errorMessage = "Username pass incorrect";
-      // } else {
-      //   _errorMessage = e.message;
-      // }
       _errorMessage = e.message;
     } finally {
       _isLoading = false;
@@ -136,17 +134,17 @@ class AuthenticationProvider extends ChangeNotifier {
     required String profileImageUrl,
   }) async {
     if (_user == null) return;
-
+    final fcmToken = await getFcmToken();
     try {
       await _authRepository.saveUserData(
-        userId: _user!.uid,
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        phoneNumber: phoneNumber,
-        mailingAddress: mailingAddress,
-        profileImageUrl: profileImageUrl,
-      );
+          userId: _user!.uid,
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          phoneNumber: phoneNumber,
+          mailingAddress: mailingAddress,
+          profileImageUrl: profileImageUrl,
+          fcmToken: fcmToken);
       _errorMessage = null;
     } catch (e) {
       _errorMessage = e.toString();
@@ -164,7 +162,12 @@ class AuthenticationProvider extends ChangeNotifier {
 
       DocumentSnapshot? docSnapshot = await _authRepository.getUserData(_firebaseUser.uid);
 
-      return docSnapshot != null && docSnapshot.exists;
+      if (docSnapshot != null && docSnapshot.exists) {
+        _userModel = UserModel.fromMap(_firebaseUser.uid, docSnapshot.data() as Map<String, dynamic>);
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
       return false;
     }
@@ -207,11 +210,20 @@ class AuthenticationProvider extends ChangeNotifier {
     notifyListeners();
     final isAvailable = await checkUserAvailable();
     if (isAvailable) {
-      await prefs.setBool('isLoggedIn', true);
-      await prefs.setString('userUUID', user?.uid ?? ""); // Store UUID
+      await prefs.setBool(AppConstants.IS_LOGGED_IN, true);
+      await prefs.setString(AppConstants.UUID, user?.uid ?? ""); // Store UUID
+      await prefs.setString(AppConstants.USERNAME, userModel?.firstName ?? ""); // Store UUID
     }
     _isLoading = false;
     notifyListeners();
     return isAvailable;
+  }
+
+  Future<String> getFcmToken() async {
+    String? token = await _firebaseMessaging.getToken();
+    //Store token
+    await prefs.setString('fcmToken', token ?? "");
+    print("FCM Token: $token");
+    return token ?? "";
   }
 }

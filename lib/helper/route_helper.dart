@@ -27,16 +27,18 @@ class RouteHelper {
   static String navBar = '/navBar';
   static String editProfile = '/editProfile';
   static String post = '/post';
+  static String postDetails = '/postDetails';
+  static String allPhotos = '/allPhotos';
+  
   static String getPostDetailRoute(PostModel post) {
-    String encodedJson = Uri.encodeComponent(json.encode(post.toJson()));
-    return "/postDetails/$encodedJson";
+    String encodedJson = Uri.encodeComponent(jsonEncode(post.toJson()));
+    return "$postDetails?postJson=$encodedJson";
   }
 
   static String getAllPhotosRoute(List<String> images, List<ImageModel> imageModels) {
-    String encodedImages = Uri.encodeComponent(json.encode(images));
-    String encodedModels =
-        Uri.encodeComponent(json.encode(imageModels.map((model) => model.toJson()).toList()));
-    return "/allPhotos?images=$encodedImages&models=$encodedModels";
+    String encodedImages = Uri.encodeComponent(jsonEncode(images));
+    String encodedModels = Uri.encodeComponent(jsonEncode(imageModels.map((model) => model.toJson()).toList()));
+    return "$allPhotos?images=$encodedImages&models=$encodedModels";
   }
 
   static final Handler _splashHandler = Handler(handlerFunc: (context, parameters) => SplashScreen());

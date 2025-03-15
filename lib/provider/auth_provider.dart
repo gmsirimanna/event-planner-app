@@ -70,7 +70,7 @@ class AuthenticationProvider extends ChangeNotifier {
   // Sign out
   Future<void> signOut() async {
     await _authRepository.signOut();
-
+    await FirebaseMessaging.instance.unsubscribeFromTopic("allUsers");
     await prefs.remove('isLoggedIn');
     await prefs.remove('userUUID'); // Remove UUID on logout
   }
@@ -89,6 +89,7 @@ class AuthenticationProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
 
   // Reset password
   Future<void> resetPassword(String email) async {

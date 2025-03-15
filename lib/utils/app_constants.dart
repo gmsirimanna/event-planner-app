@@ -14,6 +14,7 @@ class AppConstants {
 
   static const String somethingWrong = "Something went wrong !";
   static const String invalidEmail = "Please enter a valid email address.";
+  static const String signup = "Account created successfully!!";
   static const String invalidPassword = "Please enter valid password";
   static const String userNotFound =
       "No user found with these credentials. Please check your email and password or sign up.";

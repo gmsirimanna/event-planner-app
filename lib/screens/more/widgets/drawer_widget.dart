@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_planner/helper/route_helper.dart';
 import 'package:event_planner/main.dart';
@@ -47,7 +46,7 @@ class LogoutWidget extends StatelessWidget {
           showNoInternetDialog(context);
           return;
         }
-        Provider.of<AuthenticationProvider>(context, listen: false).signOut();
+        await Provider.of<AuthenticationProvider>(context, listen: false).signOut();
         Navigator.of(MyApp.navigatorKey.currentContext!)
             .pushNamedAndRemoveUntil(RouteHelper.login, (route) => false);
       },

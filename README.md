@@ -3,13 +3,14 @@
 # EVENT PLANNER APP 🗓️
 
 UI Link
+
 ```
 https://www.figma.com/design/blFQmNcPGGHQpDlFktsNLY/Swivel-React-Native-Assignment-SSE-%2F-ATL-%2F-TL?node-id=0-1&p=f&t=0pcJjxe6qcauNxKt-0
 ```
 
 ## Getting Started
 
-The Event Planner App was developed from scratch in 36 hours, focusing on user experience, functionality, and scalability. Built with attention to UI/UX details, efficient state management, and API handling, the app ensures a smooth and scalable event planning experience. 🚀
+The Event Planner App was developed from scratch in 3 days, focusing on user experience, functionality, and scalability. Built with attention to UI/UX details, efficient state management, and API handling, the app ensures a smooth and scalable event planning experience. 🚀
 
 ## Key Features:
 
@@ -20,6 +21,7 @@ The Event Planner App was developed from scratch in 36 hours, focusing on user e
   • Event Organizers: Fetch and display event organizers.
   • Image Gallery: Fetch event images and display them in a carousel slider.
   • Profile Management: Edit user details with image upload functionality.
+  • Firebase Notifications: Send scheduled notification and welcome notifications, Profile updates.
   • Offline Handling: Displays an undismissable alert when the internet connection is lost.
   • Exception Handling: Implements structured error handling & API validations.
   • Optimized Architecture: Well-organized Provider & Repository pattern ensuring scalability.
@@ -31,16 +33,17 @@ The Event Planner App was developed from scratch in 36 hours, focusing on user e
 ```
 
   • Flutter (Dart) – Cross-platform mobile development
-  • Firebase – User authentication & Firestore database
+  • Firebase – User authentication, Firestore database, Firestore, Messaging
   • Provider – State management
   • Dio – API handling
   • Connectivity Plus – Internet status monitoring
   • Cached Network Image – Efficient image caching
   • Localization – Manage Languages
+  • Notifications – Local notification
 
 ```
 
-## How to Use 
+## How to Use
 
 **Step 1:**
 
@@ -51,6 +54,7 @@ https://github.com/gmsirimanna/event-planner-app
 ```
 
 **Step 2:**
+
 ```
 Switch to main Branch
 ```
@@ -72,10 +76,11 @@ Doctor summary (to see all details, run flutter doctor -v):
 ```
 
 **Step 4:**
-Go to project root and execute the following command in console to get the required dependencies: 
+Go to project root and execute the following command in console to get the required dependencies:
 
 ```
-flutter pub get 
+flutter clear
+flutter pub get
 ```
 
 **Step 5:**
@@ -96,14 +101,14 @@ App useage
   • Complete Registration – Fill in personal details to set up the profile.
   • View Event Details – Browse event listings with full details.
   • Update Profile Info – Modify personal information and profile picture.
-  •Validations – Input fields are validated to ensure correct and secure data entry.
+  • Validations – Input fields are validated to ensure correct and secure data entry.
 
 ```
+
 ## Checkout working demo from here
 
 ```
 https://drive.google.com/drive/folders/1P06m74tYLSmPauWITRzDetJDS_Ny4YTd?usp=sharing
 ```
 
-## ENJOY 🎉!! 
-
+## ENJOY 🎉!!

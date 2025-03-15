@@ -19,6 +19,13 @@
 		<string>en</string>
 		<string>lk</string>
 	</array>
+    <key>UIBackgroundModes</key>
+    <array>
+      <string>fetch</string>
+      <string>remote-notification</string>
+    </array>
+    <key>NSUserNotificationUsageDescription</key>
+    <string>This app needs notification access to alert you about important updates.</string>
 	<key>CFBundleName</key>
 	<string>Event Planner</string>
 	<key>CFBundlePackageType</key>

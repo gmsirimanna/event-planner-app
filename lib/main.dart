@@ -5,8 +5,10 @@ import 'package:event_planner/provider/home_provider.dart';
 import 'package:event_planner/provider/nav_bar_provider.dart';
 import 'package:event_planner/provider/post_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:event_planner/helper/route_helper.dart';
 import 'package:event_planner/provider/localization_provider.dart';
@@ -14,13 +16,74 @@ import 'firebase_options.dart';
 import 'package:sizer/sizer.dart';
 import 'package:event_planner/data/base/di_container.dart' as di;
 
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
 Future<void> main() async {
+  Future<void> initializeLocalNotifications() async {
+    // iOS (Darwin) initialization settings without onDidReceiveLocalNotification.
+    final DarwinInitializationSettings initializationSettingsIOS = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+
+    // Android initialization settings.
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/launcher_icon');
+
+    final InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
+
+    // Initialize the plugin and provide a callback for notification responses.
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        // Handle the notification tap/click.
+        print('Notification clicked, payload: ${response.payload}');
+      },
+    );
+  }
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+    print('Foreground message received: ${message.notification?.title}');
+
+    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'your_channel_id',
+      'Your Channel Name',
+      channelDescription: 'Your channel description',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0, // notification id
+      message.notification?.title,
+      message.notification?.body,
+      platformChannelSpecifics,
+    );
+  });
+
   RouteHelper.setupRouter();
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // Initialize local notifications
+  await initializeLocalNotifications();
+  // Subscribe to the topic "allUsers"
+  FirebaseMessaging.instance.subscribeToTopic("allUsers");
+  FirebaseMessaging.instance.getToken();
+  await FirebaseMessaging.instance.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
   await di.init();
 
   await SystemChrome.setPreferredOrientations(

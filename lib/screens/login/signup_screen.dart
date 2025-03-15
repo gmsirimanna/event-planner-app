@@ -145,7 +145,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         if (authProvider.errorMessage?.contains("already in use") ?? false) {
           customSnackBar(AppConstants.emailAlreadyInUse, Colors.red);
         } else {
-          customSnackBar("SUCCESS", Colors.green);
+          customSnackBar(AppConstants.signup, Colors.green);
           Navigator.of(MyApp.navigatorKey.currentContext!)
               .pushReplacementNamed(RouteHelper.login, arguments: LoginScreen());
         }

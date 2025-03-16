@@ -16,7 +16,7 @@ The Event Planner App was developed from scratch, focusing on user experience, f
 
 ```
 
-  • Localization: Dual language support [English / Sinhala].
+  • Localization: Dual language support [English / Sinhala] - For login page only.
   • User Authentication: Secure / Easy Sign Up & Login with validation.
   • Event Dashboard: Displays a list of events with detailed information.
   • Event Organizers: Fetch and display event organizers.
@@ -34,7 +34,7 @@ The Event Planner App was developed from scratch, focusing on user experience, f
 ```
 
   • Flutter (Dart) – Cross-platform mobile development
-  • Firebase – User authentication, Firestore database, Firestore, Messaging
+  • Firebase – User authentication, Data management, File Storage , Messaging
   • Provider – State management
   • Dio – API handling
   • Connectivity Plus – Internet status monitoring

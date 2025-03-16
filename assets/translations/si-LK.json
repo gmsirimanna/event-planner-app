@@ -1,0 +1,12 @@
+{
+  "welcome": "පිළිගැනීමේ",
+  "welcome_portal": "ඔබගේ ද්වාරයට පිළිගනිමු",
+  "email": "ඊමේල්",
+  "email_hint": "udaharana@gmail.com",
+  "password": "මුරපදය",
+  "password_hint": "********",
+  "restore_password": "මුරපදය ප්‍රතිසාධනය කරන්න",
+  "login": "පිවිසෙන්න",
+  "sign_up": "ලියාපදිංචි වන්න",
+  "confirm_password": "මුරපදය තහවුරු කරන්න"
+}

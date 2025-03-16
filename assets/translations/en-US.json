@@ -1,0 +1,13 @@
+{
+  "welcome": "Welcome",
+  "welcome_portal": "Welcome to your Portal",
+  "email": "Email",
+  "email_hint": "example@gmail.com",
+  "password": "Password",
+  "password_hint": "********",
+  "restore_password": "Restore password",
+  "login": "Login",
+  "sign_up": "Sign Up",
+  "confirm_password": "Confirm Password"
+  
+}

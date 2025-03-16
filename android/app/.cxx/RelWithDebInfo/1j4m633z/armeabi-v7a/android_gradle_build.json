@@ -1,0 +1,28 @@
+{
+  "buildFiles": [
+    "/Users/gayansirimanna/VEGA/SDK/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/gayansirimanna/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/gayansirimanna/VEGA/Personal/Personal workspace/event-planner-app/android/app/.cxx/RelWithDebInfo/1j4m633z/armeabi-v7a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/gayansirimanna/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/gayansirimanna/VEGA/Personal/Personal workspace/event-planner-app/android/app/.cxx/RelWithDebInfo/1j4m633z/armeabi-v7a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {},
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "/Users/gayansirimanna/Library/Android/sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang.lld",
+      "cppCompilerExecutable": "/Users/gayansirimanna/Library/Android/sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++.lld"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": []
+}

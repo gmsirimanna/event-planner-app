@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/gayansirimanna/VEGA/SDK/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/gayansirimanna/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/gayansirimanna/VEGA/Personal/Personal workspace/event-planner-app/android/app/.cxx/RelWithDebInfo/1j4m633z/x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/gayansirimanna/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/gayansirimanna/VEGA/Personal/Personal workspace/event-planner-app/android/app/.cxx/RelWithDebInfo/1j4m633z/x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

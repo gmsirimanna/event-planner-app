@@ -108,6 +108,7 @@ App useage
   • View Event Details – Browse event listings with full details.
   • Update Profile Info – Modify personal information and profile picture.
   • Validations – Input fields are validated to ensure correct and secure data entry.
+  • Logins – Easy re-entry when openning the app, until sign out.
 
 ```
 

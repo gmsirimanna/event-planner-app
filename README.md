@@ -10,7 +10,7 @@ https://www.figma.com/design/blFQmNcPGGHQpDlFktsNLY/Swivel-React-Native-Assignme
 
 ## Getting Started
 
-The Event Planner App was developed from scratch in 3 days, focusing on user experience, functionality, and scalability. Built with attention to UI/UX details, efficient state management, and API handling, the app ensures a smooth and scalable event planning experience. 🚀
+The Event Planner App was developed from scratch, focusing on user experience, functionality, and scalability. Built with attention to UI/UX details, efficient state management, and API handling, the app ensures a smooth and scalable event planning experience. 🚀
 
 ## Key Features:
 
@@ -85,8 +85,14 @@ Doctor summary (to see all details, run flutter doctor -v):
 Go to project root and execute the following command in console to get the required dependencies:
 
 ```
-flutter clear
-flutter pub get
+  flutter clear
+  flutter pub get
+
+** iOS **
+
+  cd ios/
+  pod install
+
 ```
 
 **Step 5:**

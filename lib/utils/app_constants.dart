@@ -36,6 +36,7 @@ class AppConstants {
   static const String confirmPasswordRequired = "Confirm password is required.";
   static const String emailAlreadyInUse = "This email is already registered. Try logging in instead.";
   static const String noChanges = "No changes detected!";
+  static const String pleaseSelectImage = "Please select or capture an image";
 
   static List<LanguageModel> languages = [
     LanguageModel(imageUrl: "", languageName: 'English', countryCode: 'US', languageCode: 'en'),

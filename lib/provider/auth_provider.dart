@@ -18,6 +18,7 @@ class AuthenticationProvider extends ChangeNotifier {
   String? _errorMessage;
   String? _successMessage;
   bool _isLoading = false;
+  bool _isUploading = false;
   bool _canResend = true;
   File? _selectedImage;
   String? _imageUrl;
@@ -30,6 +31,7 @@ class AuthenticationProvider extends ChangeNotifier {
 
   User? get user => _user;
   bool get isLoading => _isLoading;
+  bool get isUploading => _isUploading;
   String? get errorMessage => _errorMessage;
   String? get successMessage => _successMessage;
   String? get userEmail => _userEmail;
@@ -55,6 +57,8 @@ class AuthenticationProvider extends ChangeNotifier {
   // Sign in
   Future<void> signIn(String email, String password) async {
     try {
+      // _user = null;
+      _userModel = null;
       _isLoading = true;
       notifyListeners();
       await _authRepository.signIn(email, password);
@@ -89,7 +93,6 @@ class AuthenticationProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
 
   // Reset password
   Future<void> resetPassword(String email) async {
@@ -135,6 +138,8 @@ class AuthenticationProvider extends ChangeNotifier {
     required String profileImageUrl,
   }) async {
     if (_user == null) return;
+    _isLoading = true;
+    notifyListeners();
     final fcmToken = await getFcmToken();
     try {
       await _authRepository.saveUserData(
@@ -158,13 +163,13 @@ class AuthenticationProvider extends ChangeNotifier {
 
   Future<bool> checkUserAvailable() async {
     try {
-      final _firebaseUser = FirebaseAuth.instance.currentUser;
-      if (_firebaseUser == null) return false;
+      final firebaseUser = FirebaseAuth.instance.currentUser;
+      if (firebaseUser == null) return false;
 
-      DocumentSnapshot? docSnapshot = await _authRepository.getUserData(_firebaseUser.uid);
+      DocumentSnapshot? docSnapshot = await _authRepository.getUserData(firebaseUser.uid);
 
       if (docSnapshot != null && docSnapshot.exists) {
-        _userModel = UserModel.fromMap(_firebaseUser.uid, docSnapshot.data() as Map<String, dynamic>);
+        _userModel = UserModel.fromMap(firebaseUser.uid, docSnapshot.data() as Map<String, dynamic>);
         return true;
       } else {
         return false;
@@ -196,12 +201,15 @@ class AuthenticationProvider extends ChangeNotifier {
 
   /// Upload Image and Store URL
   Future<String?> uploadProfileImage() async {
-    _isLoading = true;
+    _isUploading = true;
     notifyListeners();
     if (_selectedImage == null) {
+      _isUploading = false;
       return null;
     } else {
       _imageUrl = await _authRepository.uploadImageToFirebase(_selectedImage!);
+      _isUploading = false;
+      notifyListeners();
       return _imageUrl;
     }
   }
@@ -211,9 +219,8 @@ class AuthenticationProvider extends ChangeNotifier {
     notifyListeners();
     final isAvailable = await checkUserAvailable();
     if (isAvailable) {
-      await prefs.setBool(AppConstants.IS_LOGGED_IN, true);
-      await prefs.setString(AppConstants.UUID, user?.uid ?? ""); // Store UUID
-      await prefs.setString(AppConstants.USERNAME, userModel?.firstName ?? ""); // Store UUID
+      prefs.setBool(AppConstants.IS_LOGGED_IN, true);
+      prefs.setString(AppConstants.UUID, user?.uid ?? ""); // Store UUID
     }
     _isLoading = false;
     notifyListeners();
@@ -223,7 +230,7 @@ class AuthenticationProvider extends ChangeNotifier {
   Future<String> getFcmToken() async {
     String? token = await _firebaseMessaging.getToken();
     //Store token
-    await prefs.setString('fcmToken', token ?? "");
+    prefs.setString('fcmToken', token ?? "");
     print("FCM Token: $token");
     return token ?? "";
   }

@@ -7,21 +7,43 @@ import 'package:event_planner/utils/alerts.dart';
 import 'package:event_planner/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
-class VersionWidget extends StatelessWidget {
-  const VersionWidget({
-    super.key,
-  });
+class AppVersionText extends StatelessWidget {
+  const AppVersionText({Key? key}) : super(key: key);
+
+  Future<String> _getAppVersion() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    return packageInfo.version; // Optionally, combine with buildNumber if needed.
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.only(bottom: 20, left: 16),
-      child: Center(
-        child: Text(
-          "Version 0.0.1",
-          style: TextStyle(color: Colors.grey, fontSize: 14),
-        ),
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: FutureBuilder<String>(
+        future: _getAppVersion(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Text(
+              "Loading version...",
+              style: TextStyle(color: Colors.grey, fontSize: 14),
+            );
+          } else if (snapshot.hasError) {
+            return const Text(
+              "Version unknown",
+              style: TextStyle(color: Colors.grey, fontSize: 14),
+            );
+          } else {
+            return Text(
+              "Version ${snapshot.data}",
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.grey, fontSize: 14),
+            );
+          }
+        },
       ),
     );
   }

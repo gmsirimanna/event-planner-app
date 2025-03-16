@@ -7,19 +7,32 @@ import 'package:event_planner/utils/dimensions.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-customSnackBar(String msg, Color color) =>
-    ScaffoldMessenger.of(MyApp.navigatorKey.currentContext!).showSnackBar(SnackBar(
-      duration: const Duration(seconds: 2),
-      content: Text(
-        msg,
-        style: TextStyle(
-          fontSize: Dimensions.fontSizeSmall,
-          color: Colors.white,
+customSnackBar(String msg, Color color) {
+  // Check if a SnackBar is already visible; if so, don't show another one.
+  if (MyApp.isSnackBarVisible) return;
+
+  MyApp.isSnackBarVisible = true;
+  ScaffoldMessenger.of(MyApp.navigatorKey.currentContext!)
+      .showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 5),
+          content: Text(
+            msg,
+            style: TextStyle(
+              fontSize: Dimensions.fontSizeSmall,
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: color,
+          padding: const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
         ),
-      ),
-      backgroundColor: color,
-      padding: const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
-    ));
+      )
+      .closed
+      .then((_) {
+    // When the SnackBar is dismissed, reset the flag.
+    MyApp.isSnackBarVisible = false;
+  });
+}
 
 /// Show Image Picker Alert Dialog
 showImagePicker(BuildContext context, AuthenticationProvider authProvider) {

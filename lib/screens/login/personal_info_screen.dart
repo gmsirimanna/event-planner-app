@@ -143,8 +143,8 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                         onPressed: () async {
                           await _submitProfile(authProvider);
                         },
-                        isLoading: authProvider.isLoading,
-                        buttonLoadingText: "Saving..",
+                        isLoading: authProvider.isLoading || authProvider.isUploading,
+                        buttonLoadingText: authProvider.isUploading ? "Uploading.." : "Saving..",
                       ),
                     );
                   }),

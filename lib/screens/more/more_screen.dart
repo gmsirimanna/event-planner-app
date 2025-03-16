@@ -184,7 +184,7 @@ class _MoreScreenState extends State<MoreScreen> {
           UserHeaderWidget(),
           LogoutWidget(context: context),
           const Spacer(),
-          VersionWidget(),
+          AppVersionText(),
         ],
       ),
     );

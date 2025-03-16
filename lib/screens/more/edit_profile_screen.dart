@@ -177,8 +177,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               width: MediaQuery.of(context).size.width * 0.9,
               child: CustomButton(
                 buttonText: "Save",
-                isLoading: authProvider.isLoading,
-                buttonLoadingText: "Saving Data..",
+                isLoading: authProvider.isLoading || authProvider.isUploading,
+                buttonLoadingText: authProvider.isUploading ? "Uploading.." : "Saving Data..",
                 backgroundColor: ColorResources.primaryColor,
                 onPressed: () => _saveProfile(authProvider),
               ),

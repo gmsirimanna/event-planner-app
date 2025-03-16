@@ -94,7 +94,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   validator: (value) => Validators.validateConfirmPassword(value, passwordController.text),
                 ),
 
-                SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.1),
 
                 CustomButton(
                   buttonText: tr("sign_up"),

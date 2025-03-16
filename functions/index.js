@@ -77,7 +77,7 @@ exports.sendProfileUpdateNotification = functions.firestore
       token: afterData.fcmToken,
       notification: {
         title: `📅 Profile Updated!`,
-        body: "Your changes have been successfully",
+        body: "Your profile has been successfully updated",
       },
     };
 

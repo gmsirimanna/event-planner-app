@@ -29,7 +29,7 @@ class RouteHelper {
   static String post = '/post';
   static String postDetails = '/postDetails';
   static String allPhotos = '/allPhotos';
-  
+
   static String getPostDetailRoute(PostModel post) {
     String encodedJson = Uri.encodeComponent(jsonEncode(post.toJson()));
     return "$postDetails?postJson=$encodedJson";
@@ -37,7 +37,8 @@ class RouteHelper {
 
   static String getAllPhotosRoute(List<String> images, List<ImageModel> imageModels) {
     String encodedImages = Uri.encodeComponent(jsonEncode(images));
-    String encodedModels = Uri.encodeComponent(jsonEncode(imageModels.map((model) => model.toJson()).toList()));
+    String encodedModels =
+        Uri.encodeComponent(jsonEncode(imageModels.map((model) => model.toJson()).toList()));
     return "$allPhotos?images=$encodedImages&models=$encodedModels";
   }
 
@@ -111,13 +112,13 @@ class RouteHelper {
         transitionType: TransitionType.fadeIn,
         transitionDuration: const Duration(milliseconds: 200));
     router.define(
-      "/postDetails/:postJson",
+      postDetails,
       handler: _postDetailsHandler,
       transitionType: TransitionType.fadeIn,
     );
 
     router.define(
-      "/allPhotos",
+      allPhotos,
       handler: _allPhotosHandler,
       transitionType: TransitionType.fadeIn,
     );

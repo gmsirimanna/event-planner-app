@@ -1,6 +1,7 @@
 import 'package:event_planner/provider/auth_provider.dart';
 import 'package:event_planner/screens/login/personal_info_screen.dart';
 import 'package:event_planner/utils/alerts.dart';
+import 'package:event_planner/utils/app_constants.dart';
 import 'package:event_planner/utils/color_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -93,7 +94,7 @@ class WelcomeScreen extends StatelessWidget {
                   icon: Icons.arrow_forward,
                   onPressed: () {
                     if (authProvider.selectedImage == null) {
-                      customSnackBar("FILL IMAGE", Colors.red);
+                      customSnackBar(AppConstants.pleaseSelectImage, Colors.red);
                       return;
                     }
                     Navigator.of(context)

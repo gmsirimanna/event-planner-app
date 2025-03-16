@@ -16,6 +16,7 @@ The Event Planner App was developed from scratch in 3 days, focusing on user exp
 
 ```
 
+  • Localization: Dual language support [English / Sinhala].
   • User Authentication: Secure / Easy Sign Up & Login with validation.
   • Event Dashboard: Displays a list of events with detailed information.
   • Event Organizers: Fetch and display event organizers.

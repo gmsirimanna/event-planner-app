@@ -51,11 +51,13 @@ class _SplashScreenState extends State<SplashScreen> {
     bool isLoggedIn = prefs.getBool(AppConstants.IS_LOGGED_IN) ?? false;
     String? userUUID = prefs.getString(AppConstants.UUID);
 
-    Future.delayed(const Duration(seconds: 1), () async {
+    Future.delayed(const Duration(milliseconds: 500), () async {
       if (isLoggedIn && userUUID != null) {
         Navigator.of(MyApp.navigatorKey.currentContext!)
             .pushNamedAndRemoveUntil(RouteHelper.navBar, (route) => false, arguments: NavBarScreen());
       } else {
+        // Logout current user if they closed the ap before completing the user details, navigate back to login
+        if (FirebaseAuth.instance.currentUser != null) FirebaseAuth.instance.signOut();
         Navigator.of(MyApp.navigatorKey.currentContext!)
             .pushNamedAndRemoveUntil(RouteHelper.login, (route) => false, arguments: LoginScreen());
       }

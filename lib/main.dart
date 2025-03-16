@@ -77,7 +77,6 @@ Future<void> main() async {
   await initializeLocalNotifications();
   // Subscribe to the topic "allUsers"
   FirebaseMessaging.instance.subscribeToTopic("allUsers");
-  FirebaseMessaging.instance.getToken();
   await FirebaseMessaging.instance.requestPermission(
     alert: true,
     badge: true,
@@ -121,6 +120,9 @@ class MyApp extends StatelessWidget {
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   const MyApp({super.key});
+  // Add a flag to track SnackBar visibility
+  static bool isSnackBarVisible = false;
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ConnectivityProvider>(builder: (context, connectivityProvider, child) {

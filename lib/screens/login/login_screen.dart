@@ -82,6 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: const TextStyle(fontSize: 16, color: Colors.black), textAlign: TextAlign.center),
               const SizedBox(height: 40),
               CustomTextField(
+                key: const Key('emailField'),
                 controller: emailController,
                 labelText: tr("email"),
                 hintText: tr("email_hint"),
@@ -91,6 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 16),
               CustomTextField(
+                key: const Key('passwordField'),
                 controller: passwordController,
                 labelText: tr("password"),
                 hintText: tr("password_hint"),
@@ -128,17 +130,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-              if (authProvider.errorMessage != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: Text(
-                    authProvider.errorMessage!,
-                    style: const TextStyle(color: Colors.red, fontSize: 14),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              const SizedBox(height: 16),
               CustomButton(
+                key: const Key('loginButton'),
                 buttonText: 'login'.tr(),
                 icon: Icons.arrow_forward,
                 isLoading: authProvider.isLoading,
@@ -147,6 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 16),
               CustomButton(
+                key: const Key('signupButton'),
                 buttonText: 'sign_up'.tr(),
                 icon: Icons.arrow_forward,
                 onPressed: () {

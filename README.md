@@ -46,7 +46,7 @@ The Event Planner App was developed from scratch, focusing on user experience, f
 
 ## Firebase Functions for Push Notifications:
 
-<img width="1208" alt="fireabse fuctions" src="https://github.com/user-attachments/assets/309c7e66-c5d6-4fec-a9e1-249d4bc90ec4" />
+<img width="1180" alt="firebase functions" src="https://github.com/user-attachments/assets/e4c173b3-f8df-4cbb-acc3-ba5cccb534ef" />
 
 
 ## How to Use
